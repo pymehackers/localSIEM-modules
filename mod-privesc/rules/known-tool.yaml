@@ -1,0 +1,36 @@
+id: privesc-known-tool
+name: "Privilege escalation: known enumeration tool"
+category: enumeration-tool
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  uri: {regex_list: tools}
+  ignored: {not: true}
+lists:
+  tools:
+    - 'linpeas'
+    - 'linenum'
+    - '(^|[\s/])lse\.sh\b'
+    - 'linux-smart-enumeration'
+    - 'linux[-_]exploit[-_]suggester'
+    - '(^|[\s/])les2?\.(sh|pl)\b'
+    - '(^|[\s/])pspy(32|64)?s?(\s|$)'
+    - 'unix-privesc-check'
+    - 'linuxprivchecker'
+    - 'linux-?priv-?check'
+    - '(^|[\s/])traitor(\s|$|-)'
+    - '(^|[\s/])beroot(\.py)?(\s|$)'
+    - 'gtfonow'
+    - 'peass'
+    - '(^|[\s/])deepce(\.sh)?(\s|$)'
+    - '(^|[\s/])cdk\s+(evaluate|run|exploit)\b'
+    - 'sudo_?killer'
+    - 'suid3num'
+    - 'mimipenguin'
+    - 'lazagne'
+    - '(^|[\s/])pwncat(-cs)?(\s|$)'
+    - 'searchsploit'
+    - 'kernelpop'
+description: "{vhost} ran a known privilege escalation tool: {uri}. These tools list everything an attacker can abuse to become root. Find how it reached the server and stop the session."
+search: "uid:{uid:q}"

@@ -1,0 +1,11 @@
+id: privesc-root-without-door
+name: "Privilege escalation: root without sudo, su or pkexec"
+category: privilege-escalation
+type: privilege-escalation
+severity: critical
+kind: match
+when:
+  root_without_door: true
+  ignored: {not: true}
+description: "The session of {vhost} runs programs as root ({uri}) without having gone through sudo, su, pkexec or doas (auditd), or a root shell was started by a program of an ordinary user (bash hook). That is what a kernel exploit (DirtyPipe, nf_tables...) or a setuid exploit leaves behind. Treat the server as compromised: isolate it and check the recent commands of the session."
+search: "module:privesc vhost:{vhost:q}"

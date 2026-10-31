@@ -1,0 +1,11 @@
+id: privesc-service-new-program
+name: "Privilege escalation: service account ran a program it never ran before"
+category: webshell-command
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  new_program: true
+  ignored: {not: true}
+description: "The service account {vhost} ran {uri}, a shell, interpreter or tool it had never run before (after the learning days). It may be a web shell or an exploited service. If it is a legitimate change of the application, it will not be reported again."
+search: "module:privesc vhost:{vhost:q}"

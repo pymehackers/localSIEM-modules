@@ -1,0 +1,63 @@
+{
+  "name": "Privilege escalation",
+  "summary": "Watches what people and services run on the server (auditd, a hook of the bash shells, sudo, su and snoopy through syslog) and reports the steps of a privilege escalation: reconnaissance bursts, the search for setuid programs, linpeas and other tools, known exploits, reverse shells, root gained without sudo or su, back doors left behind, and the setuid programs and writable files that make it possible.",
+  "settings": {
+    "audit_log": {
+      "label": "Audit log",
+      "help": "Empty: log_file of /etc/audit/auditd.conf, or /var/log/audit/audit.log."
+    },
+    "syslog_mode": {
+      "label": "Read syslog",
+      "help": "Automatic: only when auditd is not running (containers) or snoopy is installed. syslog gives sudo, su, pkexec and doas, and the commands of snoopy."
+    },
+    "syslog_file": {
+      "label": "Syslog file",
+      "help": "Empty: /var/log/auth.log, /var/log/secure or /var/log/messages, the first one that exists."
+    },
+    "ignored_users": {
+      "label": "Ignored users",
+      "help": "Comma separated. Their commands are kept and searchable but never raise an alert (automation accounts such as ansible). The user localsiem is always ignored."
+    },
+    "admin_groups": {
+      "label": "Administrator groups",
+      "help": "Comma separated. Their members get the higher reconnaissance threshold and may list their sudo rights."
+    },
+    "recon_window_seconds": {
+      "label": "Reconnaissance window (seconds)",
+      "help": "Distinct reconnaissance commands of one session are counted inside this window."
+    },
+    "recon_threshold": {
+      "label": "Reconnaissance threshold",
+      "help": "Distinct reconnaissance commands in the window that make a burst (rule privesc-recon-burst) for users and service accounts."
+    },
+    "recon_threshold_admins": {
+      "label": "Reconnaissance threshold for administrators",
+      "help": "The same for root and the members of the administrator groups, who run these commands as part of their job."
+    },
+    "enumeration_threshold": {
+      "label": "Automated enumeration threshold",
+      "help": "Distinct reconnaissance commands in the window that only a script runs (rule privesc-enumeration, linpeas-like), for everybody."
+    },
+    "learning_days": {
+      "label": "Learning days of the service accounts",
+      "help": "During the first days the programs each service account runs are learned without alerts (rule privesc-service-new-program)."
+    },
+    "surface_scan_hours": {
+      "label": "Hours between scans of setuid programs",
+      "help": "Search of setuid and setgid programs and file capabilities; a new one is reported. 0: never."
+    },
+    "scan_paths": {
+      "label": "Folders scanned",
+      "help": "Comma separated; each one is walked without leaving its file system."
+    },
+    "discovery_interval_seconds": {
+      "label": "Discovery interval (seconds)",
+      "help": "How often the files of the hook of new users and the state of auditd are looked for."
+    }
+  },
+  "choices": {
+    "auto": "Automatic",
+    "always": "Always",
+    "never": "Never"
+  }
+}

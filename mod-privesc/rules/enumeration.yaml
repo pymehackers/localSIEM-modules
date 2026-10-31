@@ -1,0 +1,11 @@
+id: privesc-enumeration
+name: "Privilege escalation: automated enumeration (linpeas-like)"
+category: enumeration
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  recon_massive: true
+  ignored: {not: true}
+description: "{vhost} ran dozens of different reconnaissance commands within the window, far more than a person types: an enumeration script (linpeas, LinEnum, lse...) is probably running, even if it was renamed. The last one: {uri}. Find the script (recent commands, files in /tmp or /dev/shm) and the way the attacker got in ({ip})."
+search: "module:privesc vhost:{vhost:q} score:>=1"

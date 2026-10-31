@@ -1,0 +1,12 @@
+id: apache-webshell
+name: "Apache: possible web shell (POST to a new PHP file)"
+category: webshell
+type: malware
+severity: critical
+kind: match
+when:
+  method: POST
+  status: {range: [200, 299]}
+  path: {function: apache2.new_php}
+description: "{ip} sent a POST to {path} of {vhost} and got {status}. That PHP file was never seen before in the history, or it was created or modified in the last day. It may be a web shell uploaded by an attacker: check the file, who created it and what else that IP did."
+search: "ip:{ip:q} path:{path:q}"

@@ -1,0 +1,14 @@
+id: privesc-denied-burst
+name: "Privilege escalation: many files refused (enumeration)"
+category: enumeration
+type: privilege-escalation
+severity: medium
+kind: threshold
+when:
+  method: denied
+  ignored: {not: true}
+by: [vhost]
+window: 60
+threshold: 30
+description: "{count} files were refused to {vhost} in {window} seconds: someone is going through the system looking for readable secrets or writable files, like the enumeration scripts do. The last one: {path}."
+search: "module:privesc vhost:{vhost:q} method:denied"

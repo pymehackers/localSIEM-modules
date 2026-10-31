@@ -1,0 +1,28 @@
+id: privesc-reverse-shell
+name: "Privilege escalation: reverse shell"
+category: reverse-shell
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  uri: {regex_list: reverse_shells}
+  ignored: {not: true}
+lists:
+  reverse_shells:
+    - '/dev/(tcp|udp)/'
+    - '\b(nc|ncat|netcat|nc\.traditional|nc\.openbsd)\b.*\s-(e|c)\s'
+    - '\bncat\b.*--(exec|sh-exec|lua-exec)'
+    - '\bsocat\b.*\b(exec|system):'
+    - 'mkfifo\s+\S+.*\|\s*(nc|ncat|netcat|openssl|telnet)\b'
+    - 'mknod\s+\S+\s+p\b'
+    - 'python[0-9.]*\s+-c\s+.*socket.*(connect|dup2)'
+    - 'perl\s+(-\S+\s+)*-e\s+.*socket.*(connect|exec)'
+    - 'php[0-9.]*\s+-r\s+.*fsockopen'
+    - 'ruby\s+-rsocket'
+    - 'lua[0-9.]*\s+-e\s+.*socket'
+    - 'openssl\s+s_client\s+.*-connect.*\|\s*(\S*/)?(ba|da)?sh\b'
+    - 'telnet\s+\S+\s+\d+\s*\|\s*(\S*/)?(ba|da)?sh\b'
+    - 'awk\s+.*/inet/(tcp|udp)/'
+    - 'node\s+-e\s+.*(child_process|net\.Socket)'
+description: "{vhost} opened a reverse shell: {uri}. A shell connected out to a machine of the attacker, usually right after exploiting a web application or a service. Find the remote address in the command, block it and check how the first command got in."
+search: "uid:{uid:q}"

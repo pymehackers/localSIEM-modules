@@ -1,0 +1,18 @@
+id: privesc-hook-disabled
+name: "Privilege escalation: command hook of localSIEM avoided"
+category: defense-evasion
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  uri: {regex_list: evasion}
+  ignored: {not: true}
+lists:
+  evasion:
+    - '\btrap\s+(--\s+)?(-|''''|"")\s+DEBUG\b'
+    - '\btrap\s+-\s*DEBUG\b'
+    - '[Ll]ocalsiem[Pp]rivesc'
+    - '\bbash\s+(.*\s)?--(norc|noprofile|rcfile|init-file)\b'
+    - '\benv\s+-i\s+(\S*/)?(ba|da|z)?sh\b'
+description: "{vhost} switched off the command hook of localSIEM in their shell or started a shell without it ({uri}). From here only auditd (if the server has it) sees the commands of that shell. Nobody does it by accident."
+search: "module:privesc vhost:{vhost:q}"

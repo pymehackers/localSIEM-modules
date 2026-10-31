@@ -1,0 +1,14 @@
+id: apache-enumeration
+name: "Apache: enumeration (burst of 404 answers)"
+category: enumeration
+type: web-attack
+severity: medium
+kind: threshold
+when:
+  status: 404
+  action: none
+by: [ip, vhost]
+window: 60
+threshold: 30
+description: "{ip} received {count} answers 404 from {vhost} in {window} seconds without being blocked: it is probably looking for files or panels. Check which paths it asked for and whether any of them exists."
+search: "ip:{ip:q} status:404"

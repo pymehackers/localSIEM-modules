@@ -1,0 +1,12 @@
+id: privesc-ptrace
+name: "Privilege escalation: process attached with ptrace"
+category: process-injection
+type: privilege-escalation
+severity: medium
+kind: match
+when:
+  method: ptrace
+  action: none
+  ignored: {not: true}
+description: "{vhost} attached to another process with ptrace ({uri}). Debuggers do it, but so do the attacks that inject code into a process of root or read the passwords in its memory. On a server with no developers it is unusual."
+search: "uid:{uid:q}"

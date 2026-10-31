@@ -1,0 +1,27 @@
+{
+  "id": "apache2",
+  "version": "1.2.0",
+  "core": "2.2.0",
+  "entry": "module:ApacheModule",
+  "default_enabled": true,
+  "read_paths": ["/var/log/apache2"],
+  "setup_option": "--configure-apache",
+  "settings": [
+    {"key": "manual_only", "type": "boolean", "default": false},
+    {
+      "key": "sources", "type": "records", "default": [], "max_items": 50,
+      "fields": [
+        {"key": "kind", "type": "choice", "choices": ["access", "error", "audit"], "required": true},
+        {"key": "path", "type": "path", "required": true},
+        {"key": "vhost", "type": "string", "max_length": 253},
+        {"key": "format", "type": "string", "max_length": 500},
+        {"key": "audit_type", "type": "choice", "choices": ["serial", "concurrent"]},
+        {"key": "storage_dir", "type": "path"}
+      ]
+    },
+    {"key": "config_file", "type": "path", "default": ""},
+    {"key": "discovery_interval_seconds", "type": "integer", "default": 3600, "min": 60, "max": 86400},
+    {"key": "anomaly_threshold", "type": "integer", "default": 0, "min": 0, "max": 1000},
+    {"key": "learning_days", "type": "integer", "default": 3, "min": 0, "max": 365}
+  ]
+}

@@ -1,0 +1,13 @@
+id: privesc-root-shell-interpreter
+name: "Privilege escalation: root shell started by an interpreter"
+category: privilege-escalation
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  method: shell
+  real_uid: 0
+  parent_interpreter: true
+  ignored: {not: true}
+description: "A root bash was started by {path}, an interpreter (python, perl, ruby, awk, gdb...). It is the shape of a capability or setuid abuse (python3 -c 'import os; os.setuid(0); os.system(\"/bin/bash\")'). Check which user ran the interpreter and why it can become root."
+search: "module:privesc method:shell"

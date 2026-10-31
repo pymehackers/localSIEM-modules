@@ -1,0 +1,63 @@
+{
+  "name": "Escalada de privilegios",
+  "summary": "Vigila lo que las personas y los servicios ejecutan en el servidor (auditd, un hook de las shells de bash, y sudo, su y snoopy a través de syslog) y avisa de los pasos de una escalada de privilegios: ráfagas de reconocimiento, la búsqueda de programas setuid, linpeas y otras herramientas, exploits conocidos, shells reversas, root conseguido sin sudo ni su, puertas traseras que quedan atrás, y los programas setuid y archivos modificables que la hacen posible.",
+  "settings": {
+    "audit_log": {
+      "label": "Log de auditoría",
+      "help": "Vacío: log_file de /etc/audit/auditd.conf, o /var/log/audit/audit.log."
+    },
+    "syslog_mode": {
+      "label": "Leer syslog",
+      "help": "Automático: solo cuando auditd no está corriendo (contenedores) o snoopy está instalado. syslog aporta sudo, su, pkexec y doas, y los comandos de snoopy."
+    },
+    "syslog_file": {
+      "label": "Archivo de syslog",
+      "help": "Vacío: /var/log/auth.log, /var/log/secure o /var/log/messages, el primero que exista."
+    },
+    "ignored_users": {
+      "label": "Usuarios ignorados",
+      "help": "Separados por comas. Sus comandos se guardan y se pueden buscar, pero nunca generan alertas (cuentas de automatización como ansible). El usuario localsiem siempre se ignora."
+    },
+    "admin_groups": {
+      "label": "Grupos de administradores",
+      "help": "Separados por comas. Sus miembros tienen el umbral de reconocimiento más alto y pueden listar sus permisos de sudo."
+    },
+    "recon_window_seconds": {
+      "label": "Ventana de reconocimiento (segundos)",
+      "help": "Los comandos de reconocimiento distintos de una sesión se cuentan dentro de esta ventana."
+    },
+    "recon_threshold": {
+      "label": "Umbral de reconocimiento",
+      "help": "Comandos de reconocimiento distintos en la ventana que forman una ráfaga (regla privesc-recon-burst) para usuarios y cuentas de servicio."
+    },
+    "recon_threshold_admins": {
+      "label": "Umbral de reconocimiento de los administradores",
+      "help": "Lo mismo para root y los miembros de los grupos de administradores, que corren estos comandos como parte de su trabajo."
+    },
+    "enumeration_threshold": {
+      "label": "Umbral de enumeración automática",
+      "help": "Comandos de reconocimiento distintos en la ventana que solo corre un script (regla privesc-enumeration, tipo linpeas), para todos."
+    },
+    "learning_days": {
+      "label": "Días de aprendizaje de las cuentas de servicio",
+      "help": "Durante los primeros días se aprenden, sin alertas, los programas que corre cada cuenta de servicio (regla privesc-service-new-program)."
+    },
+    "surface_scan_hours": {
+      "label": "Horas entre búsquedas de programas setuid",
+      "help": "Búsqueda de programas setuid y setgid y de capacidades de archivo; se avisa de los nuevos. 0: nunca."
+    },
+    "scan_paths": {
+      "label": "Carpetas revisadas",
+      "help": "Separadas por comas; cada una se recorre sin salir de su sistema de archivos."
+    },
+    "discovery_interval_seconds": {
+      "label": "Intervalo de descubrimiento (segundos)",
+      "help": "Cada cuánto se buscan los archivos del hook de usuarios nuevos y el estado de auditd."
+    }
+  },
+  "choices": {
+    "auto": "Automático",
+    "always": "Siempre",
+    "never": "Nunca"
+  }
+}

@@ -1,0 +1,11 @@
+id: privesc-download-shell
+name: "Privilege escalation: downloaded script run by a shell"
+category: download-exec
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  download_to_shell: true
+  ignored: {not: true}
+description: "{vhost} downloaded something and ran it straight away with a shell or an interpreter ({uri}), without saving it first: the usual way to run linpeas or an exploit without leaving files. Find the URL in the recent commands of the session."
+search: "module:privesc vhost:{vhost:q}"

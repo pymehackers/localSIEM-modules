@@ -1,0 +1,13 @@
+id: privesc-tmp-exec
+name: "Privilege escalation: program run from a world-writable folder"
+category: suspicious-exec
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  method: {in: [exec, command]}
+  path: {regex: '^/(tmp|var/tmp|dev/shm|run/shm|run/user/\d+)/'}
+  action: none
+  ignored: {not: true}
+description: "{vhost} ran {path}, a program stored in a folder anyone can write. Exploits and enumeration tools are downloaded there because it is always writable. Check where the file came from and what it is (keep a copy before deleting it)."
+search: "module:privesc path:{path:q}"

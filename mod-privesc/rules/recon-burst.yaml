@@ -1,0 +1,12 @@
+id: privesc-recon-burst
+name: "Privilege escalation: reconnaissance burst"
+category: reconnaissance
+type: privilege-escalation
+severity: medium
+kind: match
+when:
+  recon_burst: true
+  recon_massive: {not: true}
+  ignored: {not: true}
+description: "{vhost} ran many different reconnaissance commands in a short time (who am I, which system, which users and groups, which files and permissions); the last one: {uri}. A single whoami or pwd is normal; a burst of them is what someone does right after getting a shell, looking for a way to become root. Check the recent commands of the session and where it comes from ({ip})."
+search: "module:privesc vhost:{vhost:q} score:>=1"

@@ -1,0 +1,11 @@
+id: privesc-auditd-stopped
+name: "Privilege escalation: auditd stopped by a process"
+category: defense-evasion
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  auditd_stopped_manually: true
+  ignored: {not: true}
+description: "auditd stopped ({uri}) because a process other than init asked it to: not a shutdown of the server. From now on nothing is audited. Start it again and find who stopped it."
+search: "module:privesc method:auditd"

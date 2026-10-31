@@ -1,0 +1,14 @@
+id: privesc-monitoring-changed
+name: "Privilege escalation: auditd configuration or command hook changed"
+category: defense-evasion
+type: privilege-escalation
+severity: medium
+kind: match
+when:
+  method: file
+  key: {in: [lsiem_hook, lsiem_audit_config]}
+  writer_allowed: {not: true}
+  action: none
+  ignored: {not: true}
+description: "{path} was changed by {uri} (session of {vhost}): the configuration of auditd or the command hook of localSIEM. It is expected while --configure-privesc runs or auditd is updated; otherwise someone may be blinding the monitoring."
+search: "module:privesc path:{path:q}"

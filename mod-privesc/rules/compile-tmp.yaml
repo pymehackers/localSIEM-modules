@@ -1,0 +1,11 @@
+id: privesc-compile-tmp
+name: "Privilege escalation: program compiled in a temporary folder"
+category: exploit
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  compile_in_tmp: true
+  ignored: {not: true}
+description: "{vhost} compiled something in a temporary folder ({uri}). Kernel and setuid exploits are published as source code and compiled on the target. Check the source file before deleting it."
+search: "uid:{uid:q}"

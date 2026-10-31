@@ -1,0 +1,28 @@
+id: apache-bruteforce
+name: "Apache: brute force against a login page"
+category: bruteforce
+type: authentication
+severity: medium
+kind: threshold
+when:
+  method: POST
+  path: {in_list: login_paths}
+  action: none
+by: [ip, vhost]
+window: 300
+threshold: 20
+lists:
+  login_paths:
+    - /wp-login.php
+    - /xmlrpc.php
+    - /administrator/index.php
+    - /user/login
+    - /login
+    - /admin/login
+    - /login.php
+    - /admin.php
+    - /signin
+    - /auth/login
+    - /phpmyadmin/index.php
+description: "{count} POST requests from {ip} to the login page {path} of {vhost} in {window} seconds. Check whether any of them succeeded (a 302 answer in WordPress) and whether the account is still under the owner's control."
+search: "ip:{ip:q} method:POST path:{path:q}"

@@ -1,0 +1,16 @@
+id: privesc-suid-hunt
+name: "Privilege escalation: search for setuid programs or capabilities"
+category: suid-hunt
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  uri: {regex_list: suid_search}
+  ignored: {not: true}
+lists:
+  suid_search:
+    - '\bfind\b.*\s-perm\s+[-/+]?(?:[0-7]?[2467][0-7]{3}\b|[ugoa]*[=+][^\s]*s)'
+    - '\bgetcap\s+(-\S+\s+)*-r\b'
+    - '\bfind\b.*-(writable|perm\s+-o\+w|perm\s+-0*2\b)'
+description: "{vhost} looked for setuid or setgid programs, writable files or file capabilities: {uri}. It is the first step of most escalations (GTFOBins). Check what came after it in the session."
+search: "uid:{uid:q}"

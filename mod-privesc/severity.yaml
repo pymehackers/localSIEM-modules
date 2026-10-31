@@ -1,0 +1,18 @@
+# Severity of the detections the privesc module builds by itself (the scan of
+# the attack surface and the files of the hook). The detections of the rules
+# take the severity of their rule (rules/*.yaml, or the rules table of the
+# module page). Values: low, medium, high, critical.
+
+# A new setuid or setgid program in a system folder.
+new_setuid: high
+# A new setuid or setgid program in a folder anyone can write (/tmp, /home...).
+new_setuid_writable_folder: critical
+# A new setuid program of GTFOBins (bash, find, python, vim...): a root shell.
+new_setuid_gtfobins: critical
+# A program that got capabilities that are root in practice.
+new_capabilities: high
+# A sensitive file or folder (passwd, sudoers, cron, PATH of root) became
+# writable by someone other than root.
+sensitive_file_writable: critical
+# A file of the bash hook that belongs to another user, or that is not a file.
+hook_file_tampering: high

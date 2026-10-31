@@ -1,0 +1,12 @@
+id: privesc-crash
+name: "Privilege escalation: setuid or temporary program crashed"
+category: exploit
+type: privilege-escalation
+severity: medium
+kind: match
+when:
+  method: crash
+  crash_suspicious: true
+  ignored: {not: true}
+description: "{path} crashed ({uri}) in the session of {vhost}. A setuid program that crashes, or a program in /tmp or /dev/shm that crashes, is often a failed exploit attempt (a buffer overflow, a race). Check what was being run."
+search: "module:privesc path:{path:q}"

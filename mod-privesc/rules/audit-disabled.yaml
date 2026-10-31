@@ -1,0 +1,11 @@
+id: privesc-audit-disabled
+name: "Privilege escalation: auditing turned off"
+category: defense-evasion
+type: privilege-escalation
+severity: critical
+kind: match
+when:
+  audit_disabled: true
+  ignored: {not: true}
+description: "The audit of the kernel was turned off (audit_enabled=0) from the session of {vhost}: from now on no command, setuid program or sensitive file is recorded. Turn it on again (auditctl -e 1) and find who did it."
+search: "module:privesc method:audit_config"

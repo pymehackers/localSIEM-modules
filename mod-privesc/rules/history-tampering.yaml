@@ -1,0 +1,22 @@
+id: privesc-history-tampering
+name: "Privilege escalation: shell history erased or turned off"
+category: defense-evasion
+type: privilege-escalation
+severity: medium
+kind: match
+when:
+  uri: {regex_list: history}
+  ignored: {not: true}
+lists:
+  history:
+    - '\bunset\s+(\S+\s+)*HISTFILE\b'
+    - '\bHISTFILE=(/dev/null|\s|$)'
+    - '\bHIST(FILE)?SIZE=0\b'
+    - '\bhistory\s+-c\b'
+    - '\bset\s+\+o\s+history\b'
+    - '\bln\s+-\S*s\S*\s+/dev/null\s+\S*_history'
+    - '\b(rm|shred|truncate)\s+.*_history\b'
+    - '>\s*\S*_history\b'
+    - '\bexport\s+HISTIGNORE=\*'
+description: "{vhost} erased or turned off the history of their shell ({uri}). People who are about to do something they do not want to be seen do it first. The command hook and auditd keep the commands anyway."
+search: "module:privesc vhost:{vhost:q}"

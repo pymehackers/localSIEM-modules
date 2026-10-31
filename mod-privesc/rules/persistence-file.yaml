@@ -1,0 +1,14 @@
+id: privesc-persistence-file
+name: "Privilege escalation: SSH, cron or service file changed"
+category: persistence
+type: privilege-escalation
+severity: medium
+kind: match
+when:
+  method: file
+  key: {in: [lsiem_ssh, lsiem_cron, lsiem_service_unit]}
+  writer_allowed: {not: true}
+  action: none
+  ignored: {not: true}
+description: "{path} was changed by {uri} (session of {vhost}). A key in /root/.ssh, a cron job or a service are the usual ways to keep access as root after an escalation. Check the content of the file."
+search: "module:privesc path:{path:q}"

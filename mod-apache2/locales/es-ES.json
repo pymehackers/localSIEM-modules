@@ -1,0 +1,48 @@
+{
+  "name": "Apache + ModSecurity",
+  "summary": "Lee el access.log y el error.log de Apache y el registro de auditoría de ModSecurity, junta los tres en un solo evento por petición (UNIQUE_ID) y distingue lo que ModSecurity ya bloqueó de lo que llegó a la aplicación.",
+  "settings": {
+    "manual_only": {
+      "label": "Sólo las fuentes de abajo",
+      "help": "No descubrir los registros a partir de la configuración de Apache: leer únicamente las fuentes de la lista de abajo."
+    },
+    "sources": {
+      "label": "Fuentes añadidas a mano",
+      "help": "Registros que se leen además de los descubiertos (o en su lugar, con la opción de arriba). Rutas absolutas.",
+      "add": "Añadir fuente",
+      "remove": "Quitar",
+      "empty": "No hay fuentes añadidas a mano.",
+      "fields": {
+        "kind": "Tipo",
+        "path": "Ruta",
+        "vhost": "Vhost",
+        "format": "LogFormat",
+        "audit_type": "Tipo de registro de auditoría",
+        "storage_dir": "Carpeta de la auditoría"
+      }
+    },
+    "config_file": {
+      "label": "Archivo de configuración de Apache",
+      "help": "Vacío: se localiza solo (/etc/apache2/apache2.conf en Debian, /etc/apache2/httpd.conf en Alpine)."
+    },
+    "discovery_interval_seconds": {
+      "label": "Intervalo de descubrimiento (segundos)",
+      "help": "Cada cuánto se vuelve a leer la configuración de Apache para encontrar vhosts y registros nuevos."
+    },
+    "anomaly_threshold": {
+      "label": "Umbral de bloqueo de ModSecurity",
+      "help": "0: se lee de la configuración del CRS (tx.inbound_anomaly_score_threshold); 5 si no está."
+    },
+    "learning_days": {
+      "label": "Días de aprendizaje de archivos PHP nuevos",
+      "help": "Durante los primeros días, un archivo PHP nunca visto no se notifica como nuevo (regla apache-webshell)."
+    }
+  },
+  "choices": {
+    "access": "access.log",
+    "error": "error.log",
+    "audit": "Registro de auditoría de ModSecurity",
+    "serial": "Serie (un único archivo)",
+    "concurrent": "Concurrente (un archivo por petición)"
+  }
+}

@@ -1,0 +1,12 @@
+id: privesc-setcap
+name: "Privilege escalation: file capabilities set"
+category: capabilities
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  uri: {regex: '(^|/)setcap\s+(-\S+\s+)*\S*cap_'}
+  action: none
+  ignored: {not: true}
+description: "{vhost} gave capabilities to a file: {uri}. cap_setuid on python, perl or vim, or cap_dac_override on any program, is a back door to root. Check the file (getcap) and remove them if they are not expected (setcap -r)."
+search: "uid:{uid:q}"

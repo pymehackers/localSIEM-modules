@@ -1,0 +1,21 @@
+id: privesc-audit-stop-command
+name: "Privilege escalation: command to turn auditd off"
+category: defense-evasion
+type: privilege-escalation
+severity: critical
+kind: match
+when:
+  uri: {regex_list: audit_off}
+  ignored: {not: true}
+lists:
+  audit_off:
+    - '\bauditctl\s+(-\S+\s+)*-e\s*0\b'
+    - '\bauditctl\s+(-\S+\s+)*-D\b'
+    - '\bauditctl\s+.*-a\s+(never|exit,never)'
+    - '\b(systemctl|service|rc-service|rc-update)\s+.*\bauditd\b.*\b(stop|disable|mask|del)\b'
+    - '\b(systemctl)\s+(stop|disable|mask|kill)\s+.*\bauditd\b'
+    - '\b(pkill|killall)\s+(-\S+\s+)*auditd\b'
+    - '\bkill\s+.*(pidof|pgrep)\s+auditd'
+    - '\b(rm|shred|truncate)\s+.*(/var/log/audit|/etc/audit)'
+description: "{vhost} ran a command that turns auditing off, removes its rules or erases its logs: {uri}. Attackers do it as soon as they are root, to hide what comes next. Check what happened right before it and treat the server as compromised if nobody did it on purpose."
+search: "uid:{uid:q}"

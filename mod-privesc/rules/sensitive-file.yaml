@@ -1,0 +1,14 @@
+id: privesc-sensitive-file
+name: "Privilege escalation: account, sudo, PAM or preload file changed"
+category: persistence
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  method: file
+  key: {in: [lsiem_auth, lsiem_preload, lsiem_pam]}
+  writer_allowed: {not: true}
+  action: none
+  ignored: {not: true}
+description: "{path} was changed by {uri} (session of {vhost}), not by the tools that manage accounts or packages. A new user with uid 0, a sudoers rule, a PAM module or /etc/ld.so.preload are how an attacker keeps root. If it was an administrator editing it by hand, confirm it with them."
+search: "module:privesc path:{path:q}"

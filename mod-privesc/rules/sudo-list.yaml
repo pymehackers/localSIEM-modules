@@ -1,0 +1,12 @@
+id: privesc-sudo-list
+name: "Privilege escalation: sudo rights listed by a non-administrator"
+category: sudo-enumeration
+type: privilege-escalation
+severity: medium
+kind: match
+when:
+  uri: {regex: '(^|/)sudo(-rs)?\s+(-[A-Za-z]*l[A-Za-z]*|--list)(\s|$)'}
+  account_type: {in: [user, service]}
+  ignored: {not: true}
+description: "{vhost}, who is not an administrator, listed what sudo lets them run ({uri}). Attackers do it to find a command they can abuse (GTFOBins). Check the answer of sudo in the session and what came after it."
+search: "module:privesc vhost:{vhost:q}"

@@ -1,0 +1,11 @@
+id: privesc-hook-forged
+name: "Privilege escalation: forged line in the command file of a user"
+category: defense-evasion
+type: privilege-escalation
+severity: medium
+kind: match
+when:
+  forged: true
+  ignored: {not: true}
+description: "The command file of {vhost} has a line that claims to come from another user ({uri}). Only {vhost} can write that file: they are writing fake commands to confuse the investigation."
+search: "module:privesc vhost:{vhost:q}"

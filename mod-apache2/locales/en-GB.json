@@ -1,0 +1,48 @@
+{
+  "name": "Apache + ModSecurity",
+  "summary": "Reads the Apache access.log and error.log and the ModSecurity audit log, joins the three into one event per request (UNIQUE_ID) and tells what ModSecurity already blocked from what reached the application.",
+  "settings": {
+    "manual_only": {
+      "label": "Only the sources below",
+      "help": "Do not discover the logs from the Apache configuration: read only the sources listed below."
+    },
+    "sources": {
+      "label": "Sources added by hand",
+      "help": "Logs to read besides the discovered ones (or instead of them, with the option above). Absolute paths.",
+      "add": "Add source",
+      "remove": "Remove",
+      "empty": "No sources added by hand.",
+      "fields": {
+        "kind": "Kind",
+        "path": "Path",
+        "vhost": "Vhost",
+        "format": "LogFormat",
+        "audit_type": "Audit log type",
+        "storage_dir": "Audit storage folder"
+      }
+    },
+    "config_file": {
+      "label": "Apache configuration file",
+      "help": "Empty: found automatically (/etc/apache2/apache2.conf on Debian, /etc/apache2/httpd.conf on Alpine)."
+    },
+    "discovery_interval_seconds": {
+      "label": "Discovery interval (seconds)",
+      "help": "How often the Apache configuration is read again to find new vhosts and logs."
+    },
+    "anomaly_threshold": {
+      "label": "Blocking threshold of ModSecurity",
+      "help": "0: read from the CRS configuration (tx.inbound_anomaly_score_threshold), 5 if it is not there."
+    },
+    "learning_days": {
+      "label": "Learning days for new PHP files",
+      "help": "During the first days a PHP file never seen before is not reported as new (rule apache-webshell)."
+    }
+  },
+  "choices": {
+    "access": "access.log",
+    "error": "error.log",
+    "audit": "ModSecurity audit log",
+    "serial": "Serial (one file)",
+    "concurrent": "Concurrent (one file per request)"
+  }
+}
