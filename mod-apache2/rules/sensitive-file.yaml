@@ -1,0 +1,31 @@
+id: apache-sensitive-file
+name: "Apache: sensitive file served"
+category: sensitive-file
+type: web-attack
+severity: high
+kind: match
+when:
+  status: {range: [200, 299]}
+  path: {regex_list: patterns}
+lists:
+  patterns:
+    - "/\\.env(\\.|$)"
+    - "/\\.git(/|$)"
+    - "/\\.svn(/|$)"
+    - "/\\.hg(/|$)"
+    - "/\\.ht(access|passwd)$"
+    - "\\.(sql|sql\\.gz|bak|old|orig|swp|save|backup|dump)$"
+    - "~$"
+    - "/phpinfo(\\.php)?$"
+    - "/info\\.php$"
+    - "/server-status"
+    - "/server-info"
+    - "/wp-config\\.php\\."
+    - "/config\\.(php|inc)\\.(bak|old|txt)$"
+    - "/\\.DS_Store$"
+    - "/id_(rsa|dsa|ecdsa|ed25519)$"
+    - "/composer\\.(json|lock)$"
+    - "/\\.aws/"
+    - "/backup\\.(zip|tar|tar\\.gz|tgz|rar)$"
+description: "{vhost} answered {status} to {ip} for {path}, a file that should not be public. Check what the file contains (credentials, source code, a database dump) and remove it from the web or block it."
+search: "ip:{ip:q} path:{path:q}"

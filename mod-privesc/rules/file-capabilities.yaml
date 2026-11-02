@@ -1,0 +1,11 @@
+id: privesc-file-capabilities
+name: "Privilege escalation: program gained root capabilities from its file"
+category: capabilities
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  file_caps_dangerous: true
+  ignored: {not: true}
+description: "{vhost} ran {path}, which gained capabilities that are root in practice (cap_setuid, cap_dac_override, cap_sys_admin...) from its file (setcap). An interpreter with such capabilities is a root shell. Check the capabilities of the file (getcap) and remove them if they are not needed."
+search: "uid:{uid:q}"

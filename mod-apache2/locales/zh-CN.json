@@ -1,0 +1,53 @@
+{
+  "name": "Apache + ModSecurity",
+  "summary": "读取 Apache 的 access.log 和 error.log 以及 ModSecurity 审计日志，将三者按请求（UNIQUE_ID）合并为一个事件，并区分 ModSecurity 已拦截的请求和到达应用程序的请求。",
+  "settings": {
+    "manual_only": {
+      "label": "仅使用下方的来源",
+      "help": "不根据 Apache 配置发现日志：只读取下方列出的来源。"
+    },
+    "sources": {
+      "label": "手动添加的来源",
+      "help": "除自动发现的日志之外还要读取的日志（启用上方选项时，则替代自动发现的日志）。使用绝对路径。",
+      "add": "添加来源",
+      "remove": "移除",
+      "empty": "没有手动添加的来源。",
+      "fields": {
+        "kind": "类型",
+        "path": "路径",
+        "vhost": "Vhost",
+        "format": "LogFormat",
+        "audit_type": "审计日志类型",
+        "storage_dir": "审计存储目录"
+      }
+    },
+    "config_file": {
+      "label": "Apache 配置文件",
+      "help": "留空：自动查找（Debian 上为 /etc/apache2/apache2.conf，Alpine 上为 /etc/apache2/httpd.conf）。"
+    },
+    "discovery_interval_seconds": {
+      "label": "发现间隔（秒）",
+      "help": "重新读取 Apache 配置以查找新 vhost 和新日志的频率。"
+    },
+    "anomaly_threshold": {
+      "label": "ModSecurity 拦截阈值",
+      "help": "0：从 CRS 配置（tx.inbound_anomaly_score_threshold）中读取，未配置时为 5。"
+    },
+    "learning_days": {
+      "label": "新 PHP 文件的学习天数",
+      "help": "在最初的这些天内，从未见过的 PHP 文件不会被报告为新文件（规则 apache-webshell）。"
+    }
+  },
+  "choices": {
+    "access": "access.log",
+    "error": "error.log",
+    "audit": "ModSecurity 审计日志",
+    "serial": "串行（单个文件）",
+    "concurrent": "并发（每个请求一个文件）"
+  },
+  "install_requirements": {
+    "note": "Apache 2.4，以及 ModSecurity 2（mod_security2）和 OWASP Core Rule Set。仅有 Apache 时模块保持停用：它需要已加载的 ModSecurity。",
+    "debian": "只有当 /etc/modsecurity/modsecurity.conf 不存在时，cp 才会根据推荐配置（DetectionOnly）创建它：绝不会替换您的配置。a2enmod 和重启会在 Apache 中加载 ModSecurity 和 mod_unique_id。",
+    "alpine": "Alpine 没有适用于 Apache 的 ModSecurity 2 软件包：运行这些命令后，请从源码编译 mod_security2 2.9 和 OWASP CRS，并在 /etc/apache2/httpd.conf 中加载它们（LoadModule security2_module 和 LoadModule unique_id_module）。在 ModSecurity 加载之前，模块保持停用。"
+  }
+}

@@ -1,0 +1,33 @@
+id: privesc-suid-escape
+name: "Privilege escalation: root inherited from a setuid program"
+category: privilege-escalation
+type: privilege-escalation
+severity: critical
+kind: match
+when:
+  suid_escape: true
+  path: {not: {regex_list: helpers}}
+  ignored: {not: true}
+lists:
+  # Programs that setuid programs start on purpose with the effective uid of
+  # root (mount helpers, D-Bus, polkit, X).
+  helpers:
+    - '/(u?mount)\.[\w-]+$'
+    - '/fusermount3?$'
+    - '/dbus-daemon-launch-helper$'
+    - '/polkit-agent-helper-1$'
+    - '/ssh-keysign$'
+    - '/Xorg(\.wrap)?$'
+    - '/xorg/'
+    - '/chrome-sandbox$'
+    - '/ntfs-3g$'
+    - '/unix_chkpwd$'
+    - '/pam_timestamp_check$'
+    - '/userhelper$'
+    - '/newuidmap$'
+    - '/newgidmap$'
+    - '/snap-confine$'
+    - '/lxc-user-nic$'
+    - '/(u?mount)$'
+description: "{vhost} ran {path} with the effective uid of root although it is not a setuid program: it inherited root from a setuid program that was abused (GTFOBins: find -exec, vim, python os.setuid, less, awk...). Command: {uri}. The escalation worked. Find the setuid program (parent of the process), remove its setuid bit and treat the server as compromised."
+search: "uid:{uid:q}"

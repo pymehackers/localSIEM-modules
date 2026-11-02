@@ -1,0 +1,68 @@
+{
+  "name": "权限提升",
+  "summary": "监控用户和服务在服务器上运行的内容（auditd 使用服务器已有的规则，sudo、su、pkexec、doas 和 snoopy 则通过 syslog），并报告权限提升的各个步骤：侦察突发、搜索 setuid 程序、linpeas 等工具、已知漏洞利用、反弹 shell、未经 sudo 或 su 获得 root、遗留的后门，以及使权限提升成为可能的 setuid 程序和可写文件。",
+  "settings": {
+    "audit_log": {
+      "label": "审计日志",
+      "help": "留空：使用 /etc/audit/auditd.conf 中的 log_file，或 /var/log/audit/audit.log。"
+    },
+    "syslog_mode": {
+      "label": "读取 syslog",
+      "help": "自动：仅当 auditd 未运行（容器）、其日志无法读取或已安装 snoopy 时读取。syslog 提供 sudo、su、pkexec 和 doas 的记录，以及 snoopy 记录的命令。"
+    },
+    "syslog_file": {
+      "label": "Syslog 文件",
+      "help": "留空：/var/log/auth.log、/var/log/secure 或 /var/log/messages 中第一个存在的文件。"
+    },
+    "ignored_users": {
+      "label": "忽略的用户",
+      "help": "以逗号分隔。其命令会被保存且可搜索，但从不触发告警（例如 ansible 等自动化账户）。localsiem 用户始终被忽略。"
+    },
+    "admin_groups": {
+      "label": "管理员组",
+      "help": "以逗号分隔。其成员使用较高的侦察阈值，并且可以列出自己的 sudo 权限。"
+    },
+    "recon_window_seconds": {
+      "label": "侦察窗口（秒）",
+      "help": "在此窗口内统计同一会话中不同侦察命令的数量。"
+    },
+    "recon_threshold": {
+      "label": "侦察阈值",
+      "help": "对普通用户和服务账户而言，窗口内构成一次突发（规则 privesc-recon-burst）的不同侦察命令数量。"
+    },
+    "recon_threshold_admins": {
+      "label": "管理员的侦察阈值",
+      "help": "同上，适用于 root 和管理员组成员，他们在日常工作中会运行这些命令。"
+    },
+    "enumeration_threshold": {
+      "label": "自动化枚举阈值",
+      "help": "窗口内只有脚本才会运行的不同侦察命令数量（规则 privesc-enumeration，类似 linpeas），适用于所有人。"
+    },
+    "learning_days": {
+      "label": "服务账户的学习天数",
+      "help": "在最初的这些天内，学习每个服务账户运行的程序而不产生告警（规则 privesc-service-new-program）。"
+    },
+    "surface_scan_hours": {
+      "label": "setuid 程序扫描间隔（小时）",
+      "help": "搜索 setuid 和 setgid 程序以及文件 capabilities；发现新的即报告。0：从不。"
+    },
+    "scan_paths": {
+      "label": "扫描的目录",
+      "help": "以逗号分隔；遍历每个目录时不会跨出其所在的文件系统。"
+    },
+    "discovery_interval_seconds": {
+      "label": "发现间隔（秒）",
+      "help": "查找审计日志、syslog 以及 auditd 状态的频率。"
+    }
+  },
+  "choices": {
+    "auto": "自动",
+    "always": "始终",
+    "never": "从不"
+  },
+  "install_requirements": {
+    "note": "只要有一个可读的来源即可：auditd 能看到的最多，但无法在容器（LXC、Docker）中运行；syslog 守护进程会记录 sudo、su、pkexec 和 doas。auditd 只记录服务器所加载的审计规则涵盖的系统调用：模块从不添加规则。",
+    "debian": "rsyslog 会写入 /var/log/auth.log。若还要看到运行的每个程序，请添加 snoopy（apt-get -y install snoopy）。在容器中只安装 rsyslog：auditd 无法在其中运行。",
+    "alpine": "Alpine 已通过其 syslog（BusyBox）将 sudo、su 和 doas 记录到 /var/log/messages，因此这些命令只添加 auditd（容器中不添加）。Alpine 没有 snoopy 软件包。"
+  }
+}

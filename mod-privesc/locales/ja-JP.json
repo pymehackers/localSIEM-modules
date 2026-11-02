@@ -1,0 +1,68 @@
+{
+  "name": "権限昇格",
+  "summary": "サーバー上で人やサービスが実行するもの（サーバーにすでにあるルールによる auditd、および syslog 経由の sudo、su、pkexec、doas、snoopy）を監視し、権限昇格の各段階を報告します。対象は、偵察コマンドの集中実行、setuid プログラムの探索、linpeas などのツール、既知のエクスプロイト、リバースシェル、sudo や su を使わずに取得された root、残されたバックドア、そして権限昇格を可能にする setuid プログラムや書き込み可能なファイルです。",
+  "settings": {
+    "audit_log": {
+      "label": "監査ログ",
+      "help": "空の場合：/etc/audit/auditd.conf の log_file、または /var/log/audit/audit.log。"
+    },
+    "syslog_mode": {
+      "label": "syslog を読み取る",
+      "help": "自動：auditd が稼働していない場合（コンテナ）、そのログを読み取れない場合、または snoopy がインストールされている場合のみ。syslog からは、sudo、su、pkexec、doas と、snoopy のコマンドが得られます。"
+    },
+    "syslog_file": {
+      "label": "syslog ファイル",
+      "help": "空の場合：/var/log/auth.log、/var/log/secure、/var/log/messages のうち、最初に存在するもの。"
+    },
+    "ignored_users": {
+      "label": "無視するユーザー",
+      "help": "カンマ区切り。これらのユーザーのコマンドは保存され、検索もできますが、アラートは発生しません（ansible などの自動化アカウント）。localsiem ユーザーは常に無視されます。"
+    },
+    "admin_groups": {
+      "label": "管理者グループ",
+      "help": "カンマ区切り。メンバーには高い方の偵察しきい値が適用され、自分の sudo 権限を一覧表示できます。"
+    },
+    "recon_window_seconds": {
+      "label": "偵察ウィンドウ（秒）",
+      "help": "1つのセッションで実行された異なる偵察コマンドを、このウィンドウ内で数えます。"
+    },
+    "recon_threshold": {
+      "label": "偵察しきい値",
+      "help": "ユーザーとサービスアカウントについて、集中実行（ルール privesc-recon-burst）とみなす、ウィンドウ内の異なる偵察コマンドの数。"
+    },
+    "recon_threshold_admins": {
+      "label": "管理者の偵察しきい値",
+      "help": "root と管理者グループのメンバーに適用される同様のしきい値。これらのユーザーは、業務の一環としてこれらのコマンドを実行します。"
+    },
+    "enumeration_threshold": {
+      "label": "自動列挙のしきい値",
+      "help": "スクリプトでしか実行されないとみなす、ウィンドウ内の異なる偵察コマンドの数（ルール privesc-enumeration、linpeas 型）。全員に適用されます。"
+    },
+    "learning_days": {
+      "label": "サービスアカウントの学習日数",
+      "help": "最初の数日間は、各サービスアカウントが実行するプログラムを、アラートを出さずに学習します（ルール privesc-service-new-program）。"
+    },
+    "surface_scan_hours": {
+      "label": "setuid プログラムのスキャン間隔（時間）",
+      "help": "setuid と setgid のプログラム、およびファイルケーパビリティを探索し、新しいものを報告します。0：実行しない。"
+    },
+    "scan_paths": {
+      "label": "スキャンするフォルダー",
+      "help": "カンマ区切り。各フォルダーは、そのファイルシステムから出ずに走査されます。"
+    },
+    "discovery_interval_seconds": {
+      "label": "検出間隔（秒）",
+      "help": "監査ログ、syslog、auditd の状態を探す間隔。"
+    }
+  },
+  "choices": {
+    "auto": "自動",
+    "always": "常に",
+    "never": "しない"
+  },
+  "install_requirements": {
+    "note": "読み取り可能なソースが1つあれば十分です。auditd が最も多くを把握できますが、コンテナ（LXC、Docker）では動作しません。syslog デーモンは sudo、su、pkexec、doas を記録します。auditd は、サーバーが読み込む監査ルールのシステムコールのみを記録します。モジュールがルールを追加することはありません。",
+    "debian": "rsyslog は /var/log/auth.log に書き込みます。実行されたすべてのプログラムも確認するには、snoopy を追加します（apt-get -y install snoopy）。コンテナでは rsyslog のみをインストールしてください。auditd はコンテナでは動作しません。",
+    "alpine": "Alpine はすでに syslog（BusyBox）で sudo、su、doas を /var/log/messages に記録しているため、これらのコマンドで追加するのは auditd のみです（コンテナでは追加しません）。Alpine には snoopy パッケージがありません。"
+  }
+}

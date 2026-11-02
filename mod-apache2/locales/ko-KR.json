@@ -1,0 +1,53 @@
+{
+  "name": "Apache + ModSecurity",
+  "summary": "Apache의 access.log와 error.log, ModSecurity 감사 로그를 읽고, 세 로그를 요청별(UNIQUE_ID) 이벤트 하나로 결합하여 ModSecurity가 이미 차단한 것과 애플리케이션에 도달한 것을 구분합니다.",
+  "settings": {
+    "manual_only": {
+      "label": "아래 소스만 사용",
+      "help": "Apache 구성에서 로그를 탐색하지 않고 아래에 나열된 소스만 읽습니다."
+    },
+    "sources": {
+      "label": "직접 추가한 소스",
+      "help": "탐색된 로그 외에(또는 위 옵션을 사용하면 탐색된 로그 대신) 읽을 로그입니다. 절대 경로로 입력합니다.",
+      "add": "소스 추가",
+      "remove": "삭제",
+      "empty": "직접 추가한 소스가 없습니다.",
+      "fields": {
+        "kind": "종류",
+        "path": "경로",
+        "vhost": "Vhost",
+        "format": "LogFormat",
+        "audit_type": "감사 로그 유형",
+        "storage_dir": "감사 저장 폴더"
+      }
+    },
+    "config_file": {
+      "label": "Apache 구성 파일",
+      "help": "비워 두면 자동으로 찾습니다(Debian은 /etc/apache2/apache2.conf, Alpine은 /etc/apache2/httpd.conf)."
+    },
+    "discovery_interval_seconds": {
+      "label": "탐색 간격(초)",
+      "help": "새 vhost와 로그를 찾기 위해 Apache 구성을 다시 읽는 주기입니다."
+    },
+    "anomaly_threshold": {
+      "label": "ModSecurity 차단 임계값",
+      "help": "0: CRS 구성(tx.inbound_anomaly_score_threshold)에서 읽으며, 값이 없으면 5를 사용합니다."
+    },
+    "learning_days": {
+      "label": "새 PHP 파일 학습 기간(일)",
+      "help": "처음 며칠 동안은 처음 보는 PHP 파일을 새 파일로 보고하지 않습니다(apache-webshell 규칙)."
+    }
+  },
+  "choices": {
+    "access": "access.log",
+    "error": "error.log",
+    "audit": "ModSecurity 감사 로그",
+    "serial": "직렬(단일 파일)",
+    "concurrent": "동시(요청별 파일)"
+  },
+  "install_requirements": {
+    "note": "ModSecurity 2(mod_security2)와 OWASP Core Rule Set을 갖춘 Apache 2.4. Apache만 있으면 모듈은 꺼진 상태로 유지됩니다. ModSecurity가 로드되어 있어야 합니다.",
+    "debian": "cp는 /etc/modsecurity/modsecurity.conf가 없을 때만 권장 구성(DetectionOnly)으로 이 파일을 만들며, 기존 파일을 덮어쓰지 않습니다. a2enmod와 재시작으로 Apache에 ModSecurity와 mod_unique_id가 로드됩니다.",
+    "alpine": "Alpine에는 Apache용 ModSecurity 2 패키지가 없습니다. 이 명령을 실행한 후 mod_security2 2.9와 OWASP CRS를 소스에서 빌드하고 /etc/apache2/httpd.conf에서 로드하십시오(LoadModule security2_module 및 LoadModule unique_id_module). ModSecurity가 로드될 때까지 모듈은 꺼진 상태로 유지됩니다."
+  }
+}

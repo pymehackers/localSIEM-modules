@@ -1,0 +1,68 @@
+{
+  "name": "Élévation de privilèges",
+  "summary": "Surveille ce que les personnes et les services exécutent sur le serveur (auditd avec les règles dont le serveur dispose déjà, et sudo, su, pkexec, doas et snoopy via syslog) et signale les étapes d'une élévation de privilèges : rafales de reconnaissance, recherche de programmes setuid, linpeas et autres outils, exploits connus, reverse shells, root obtenu sans sudo ni su, portes dérobées laissées en place, ainsi que les programmes setuid et les fichiers modifiables qui la rendent possible.",
+  "settings": {
+    "audit_log": {
+      "label": "Journal d'audit",
+      "help": "Vide : log_file de /etc/audit/auditd.conf, ou /var/log/audit/audit.log."
+    },
+    "syslog_mode": {
+      "label": "Lire syslog",
+      "help": "Automatique : uniquement quand auditd ne tourne pas (conteneurs), que son journal ne peut pas être lu ou que snoopy est installé. syslog fournit sudo, su, pkexec et doas, ainsi que les commandes de snoopy."
+    },
+    "syslog_file": {
+      "label": "Fichier syslog",
+      "help": "Vide : /var/log/auth.log, /var/log/secure ou /var/log/messages, le premier qui existe."
+    },
+    "ignored_users": {
+      "label": "Utilisateurs ignorés",
+      "help": "Séparés par des virgules. Leurs commandes sont conservées et consultables, mais ne déclenchent jamais d'alerte (comptes d'automatisation tels qu'ansible). L'utilisateur localsiem est toujours ignoré."
+    },
+    "admin_groups": {
+      "label": "Groupes d'administrateurs",
+      "help": "Séparés par des virgules. Leurs membres bénéficient du seuil de reconnaissance le plus élevé et peuvent lister leurs droits sudo."
+    },
+    "recon_window_seconds": {
+      "label": "Fenêtre de reconnaissance (secondes)",
+      "help": "Les commandes de reconnaissance distinctes d'une session sont comptées dans cette fenêtre."
+    },
+    "recon_threshold": {
+      "label": "Seuil de reconnaissance",
+      "help": "Nombre de commandes de reconnaissance distinctes dans la fenêtre qui constitue une rafale (règle privesc-recon-burst) pour les utilisateurs et les comptes de service."
+    },
+    "recon_threshold_admins": {
+      "label": "Seuil de reconnaissance pour les administrateurs",
+      "help": "Idem pour root et les membres des groupes d'administrateurs, qui exécutent ces commandes dans le cadre de leur travail."
+    },
+    "enumeration_threshold": {
+      "label": "Seuil d'énumération automatisée",
+      "help": "Nombre de commandes de reconnaissance distinctes dans la fenêtre que seul un script exécute (règle privesc-enumeration, de type linpeas), pour tout le monde."
+    },
+    "learning_days": {
+      "label": "Jours d'apprentissage des comptes de service",
+      "help": "Pendant les premiers jours, les programmes exécutés par chaque compte de service sont appris sans alerte (règle privesc-service-new-program)."
+    },
+    "surface_scan_hours": {
+      "label": "Heures entre les analyses des programmes setuid",
+      "help": "Recherche des programmes setuid et setgid et des capabilities de fichiers ; tout nouveau programme est signalé. 0 : jamais."
+    },
+    "scan_paths": {
+      "label": "Dossiers analysés",
+      "help": "Séparés par des virgules ; chacun est parcouru sans sortir de son système de fichiers."
+    },
+    "discovery_interval_seconds": {
+      "label": "Intervalle de découverte (secondes)",
+      "help": "Fréquence à laquelle le journal d'audit, syslog et l'état d'auditd sont recherchés."
+    }
+  },
+  "choices": {
+    "auto": "Automatique",
+    "always": "Toujours",
+    "never": "Jamais"
+  },
+  "install_requirements": {
+    "note": "Une seule source lisible suffit : auditd est celle qui voit le plus, mais il ne peut pas fonctionner dans un conteneur (LXC, Docker) ; un démon syslog journalise sudo, su, pkexec et doas. auditd ne journalise que les appels système des règles d'audit que charge le serveur : le module n'ajoute jamais de règles.",
+    "debian": "rsyslog écrit /var/log/auth.log. Pour voir aussi chaque programme exécuté, ajoutez snoopy (apt-get -y install snoopy). Dans un conteneur, installez uniquement rsyslog : auditd ne peut pas y fonctionner.",
+    "alpine": "Alpine journalise déjà sudo, su et doas dans /var/log/messages avec son syslog (BusyBox) ; ces commandes n'ajoutent donc qu'auditd (pas dans un conteneur). Alpine n'a pas de paquet snoopy."
+  }
+}

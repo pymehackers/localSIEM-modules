@@ -1,0 +1,12 @@
+id: privesc-sensitive-denied
+name: "Privilege escalation: attempt to read the password hashes or files of root"
+category: enumeration
+type: privilege-escalation
+severity: medium
+kind: match
+when:
+  method: denied
+  path: {regex: '^/etc/(shadow|gshadow|sudoers)|^/etc/sudoers\.d/|^/root(/|$)'}
+  ignored: {not: true}
+description: "{vhost} tried to open {path} and was refused ({uri}). Ordinary users have no reason to read the password hashes, the sudoers rules or the files of root."
+search: "module:privesc vhost:{vhost:q} method:denied"

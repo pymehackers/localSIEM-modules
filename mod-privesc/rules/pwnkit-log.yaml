@@ -1,0 +1,12 @@
+id: privesc-pwnkit-log
+name: "Privilege escalation: pkexec reports a PwnKit attempt"
+category: exploit
+type: privilege-escalation
+severity: critical
+kind: match
+when:
+  method: pkexec
+  message: {regex: 'GCONV_PATH|suspicious content|was not found the /etc/shells|CHARSET='}
+  ignored: {not: true}
+description: "pkexec logged the trace that the PwnKit exploit (CVE-2021-4034) leaves for {vhost}: {uri}. Check whether a root shell followed and update polkit."
+search: "module:privesc vhost:{vhost:q} method:pkexec"

@@ -1,0 +1,68 @@
+{
+  "name": "הסלמת הרשאות",
+  "summary": "מנטר מה שאנשים ושירותים מריצים בשרת (auditd עם הכללים שכבר קיימים בשרת, ו-sudo, su, pkexec, doas ו-snoopy דרך syslog) ומדווח על שלבי הסלמת הרשאות: פרצי סיור, חיפוש תוכניות setuid, linpeas וכלים אחרים, ניצולים (exploits) מוכרים, reverse shells, השגת root ללא sudo או su, דלתות אחוריות שהושארו, ותוכניות ה-setuid והקבצים הניתנים לכתיבה שמאפשרים זאת.",
+  "settings": {
+    "audit_log": {
+      "label": "לוג ביקורת",
+      "help": "ריק: log_file של /etc/audit/auditd.conf, או /var/log/audit/audit.log."
+    },
+    "syslog_mode": {
+      "label": "קריאת syslog",
+      "help": "אוטומטי: רק כש-auditd אינו פועל (קונטיינרים), כשלא ניתן לקרוא את הלוג שלו או כש-snoopy מותקן. syslog מספק את sudo, su, pkexec ו-doas, ואת הפקודות של snoopy."
+    },
+    "syslog_file": {
+      "label": "קובץ syslog",
+      "help": "ריק: /var/log/auth.log, /var/log/secure או /var/log/messages, הראשון מביניהם שקיים."
+    },
+    "ignored_users": {
+      "label": "משתמשים שמתעלמים מהם",
+      "help": "מופרדים בפסיקים. הפקודות שלהם נשמרות וניתנות לחיפוש, אבל לעולם אינן מפיקות התראה (חשבונות אוטומציה כמו ansible). המשתמש localsiem תמיד מוחרג."
+    },
+    "admin_groups": {
+      "label": "קבוצות מנהלי מערכת",
+      "help": "מופרדות בפסיקים. החברים בהן מקבלים את סף הסיור הגבוה יותר ורשאים להציג את הרשאות ה-sudo שלהם."
+    },
+    "recon_window_seconds": {
+      "label": "חלון הסיור (שניות)",
+      "help": "פקודות סיור שונות של סשן אחד נספרות בתוך חלון זה."
+    },
+    "recon_threshold": {
+      "label": "סף הסיור",
+      "help": "מספר פקודות הסיור השונות בחלון שמהוות פרץ (הכלל privesc-recon-burst) עבור משתמשים וחשבונות שירות."
+    },
+    "recon_threshold_admins": {
+      "label": "סף הסיור למנהלי מערכת",
+      "help": "אותו הדבר עבור root ועבור החברים בקבוצות מנהלי המערכת, שמריצים פקודות אלה כחלק מעבודתם."
+    },
+    "enumeration_threshold": {
+      "label": "סף מיפוי אוטומטי",
+      "help": "מספר פקודות הסיור השונות בחלון שרק סקריפט מריץ (הכלל privesc-enumeration, בסגנון linpeas), עבור כולם."
+    },
+    "learning_days": {
+      "label": "ימי הלמידה של חשבונות השירות",
+      "help": "במהלך הימים הראשונים, התוכניות שכל חשבון שירות מריץ נלמדות ללא התראות (הכלל privesc-service-new-program)."
+    },
+    "surface_scan_hours": {
+      "label": "שעות בין סריקות של תוכניות setuid",
+      "help": "חיפוש תוכניות setuid ו-setgid ו-capabilities של קבצים; כל חדש מדווח. 0: אף פעם."
+    },
+    "scan_paths": {
+      "label": "תיקיות נסרקות",
+      "help": "מופרדות בפסיקים; כל אחת נסרקת בלי לצאת ממערכת הקבצים שלה."
+    },
+    "discovery_interval_seconds": {
+      "label": "מרווח הגילוי (שניות)",
+      "help": "באיזו תדירות מתבצע חיפוש של לוג הביקורת, של syslog ושל מצב auditd."
+    }
+  },
+  "choices": {
+    "auto": "אוטומטי",
+    "always": "תמיד",
+    "never": "אף פעם"
+  },
+  "install_requirements": {
+    "note": "מספיק מקור קריא אחד: auditd רואה הכי הרבה, אבל אינו יכול לפעול בקונטיינר (LXC, Docker); דמון syslog רושם את sudo, su, pkexec ו-doas. auditd רושם רק את קריאות המערכת של כללי הביקורת שהשרת טוען: המודול לעולם אינו מוסיף כללים.",
+    "debian": "rsyslog כותב את /var/log/auth.log. כדי לראות גם כל תוכנית שמורצת, יש להוסיף את snoopy (apt-get -y install snoopy). בקונטיינר יש להתקין רק את rsyslog: auditd אינו יכול לפעול שם.",
+    "alpine": "Alpine כבר רושמת את sudo, su ו-doas ב-/var/log/messages באמצעות ה-syslog שלה (BusyBox), ולכן הפקודות האלה מוסיפות רק את auditd (לא בקונטיינר). ל-Alpine אין חבילת snoopy."
+  }
+}

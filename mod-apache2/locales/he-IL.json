@@ -1,0 +1,53 @@
+{
+  "name": "Apache + ModSecurity",
+  "summary": "קורא את access.log ואת error.log של Apache ואת לוג הביקורת של ModSecurity, מאחד את שלושתם לאירוע אחד לכל בקשה (UNIQUE_ID) ומבחין בין מה ש-ModSecurity כבר חסם לבין מה שהגיע לאפליקציה.",
+  "settings": {
+    "manual_only": {
+      "label": "רק המקורות שלמטה",
+      "help": "לא לגלות את הלוגים מתוך התצורה של Apache: לקרוא רק את המקורות שברשימה שלמטה."
+    },
+    "sources": {
+      "label": "מקורות שנוספו ידנית",
+      "help": "לוגים לקריאה בנוסף לאלה שהתגלו (או במקומם, עם האפשרות שלמעלה). נתיבים מוחלטים.",
+      "add": "הוספת מקור",
+      "remove": "הסרה",
+      "empty": "לא נוספו מקורות ידנית.",
+      "fields": {
+        "kind": "סוג",
+        "path": "נתיב",
+        "vhost": "Vhost",
+        "format": "LogFormat",
+        "audit_type": "סוג לוג הביקורת",
+        "storage_dir": "תיקיית האחסון של הביקורת"
+      }
+    },
+    "config_file": {
+      "label": "קובץ התצורה של Apache",
+      "help": "ריק: נמצא אוטומטית (/etc/apache2/apache2.conf ב-Debian, /etc/apache2/httpd.conf ב-Alpine)."
+    },
+    "discovery_interval_seconds": {
+      "label": "מרווח הגילוי (שניות)",
+      "help": "באיזו תדירות התצורה של Apache נקראת מחדש כדי למצוא vhosts ולוגים חדשים."
+    },
+    "anomaly_threshold": {
+      "label": "סף החסימה של ModSecurity",
+      "help": "0: נקרא מהתצורה של ה-CRS (tx.inbound_anomaly_score_threshold), או 5 אם אינו מופיע שם."
+    },
+    "learning_days": {
+      "label": "ימי למידה לקובצי PHP חדשים",
+      "help": "במהלך הימים הראשונים, קובץ PHP שלא נראה קודם אינו מדווח כחדש (הכלל apache-webshell)."
+    }
+  },
+  "choices": {
+    "access": "access.log",
+    "error": "error.log",
+    "audit": "לוג הביקורת של ModSecurity",
+    "serial": "טורי (קובץ אחד)",
+    "concurrent": "מקבילי (קובץ לכל בקשה)"
+  },
+  "install_requirements": {
+    "note": "Apache 2.4 עם ModSecurity 2 (mod_security2) ו-OWASP Core Rule Set. עם Apache בלבד המודול נשאר כבוי: הוא צריך ש-ModSecurity יהיה טעון.",
+    "debian": "הפקודה cp יוצרת את /etc/modsecurity/modsecurity.conf מהתצורה המומלצת (DetectionOnly) רק כשהקובץ אינו קיים: היא לעולם אינה מחליפה את הקובץ שלך. a2enmod וההפעלה מחדש טוענים את ModSecurity ואת mod_unique_id ב-Apache.",
+    "alpine": "ל-Alpine אין חבילת ModSecurity 2 עבור Apache: אחרי הפקודות האלה יש לבנות את mod_security2 2.9 ואת OWASP CRS מקוד המקור ולטעון אותם ב-/etc/apache2/httpd.conf (LoadModule security2_module ו-LoadModule unique_id_module). כל עוד ModSecurity אינו טעון, המודול נשאר כבוי."
+  }
+}

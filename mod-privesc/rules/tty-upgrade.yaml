@@ -1,0 +1,18 @@
+id: privesc-tty-upgrade
+name: "Privilege escalation: shell upgraded to a full terminal"
+category: tty-upgrade
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  uri: {regex_list: tty_upgrades}
+  ignored: {not: true}
+lists:
+  tty_upgrades:
+    - 'pty\.spawn'
+    - '\bscript\b.*\s/dev/null\b'
+    - 'stty\s+raw\s+-echo'
+    - '\bsocat\b.*\bpty\b'
+    - 'expect\s+-c\s+.*spawn\s+(\S*/)?(ba|da|z)?sh\b'
+description: "{vhost} turned a basic shell into a full terminal ({uri}). Attackers do it after a reverse shell or a web shell, to run su, sudo and interactive exploits. Check the session and where it comes from."
+search: "uid:{uid:q}"

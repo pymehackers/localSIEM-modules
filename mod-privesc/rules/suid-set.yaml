@@ -1,0 +1,13 @@
+id: privesc-suid-set
+name: "Privilege escalation: setuid or setgid bit set on a file"
+category: persistence
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  method: chmod
+  writer_allowed: {not: true}
+  action: none
+  ignored: {not: true}
+description: "{vhost} set the setuid or setgid bit on {path} ({uri}). Outside the package manager it is rare: a setuid copy of bash or of an interpreter is a back door to root. Check the file and remove the bit if it is not expected (chmod u-s,g-s)."
+search: "module:privesc path:{path:q}"

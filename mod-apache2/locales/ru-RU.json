@@ -1,0 +1,53 @@
+{
+  "name": "Apache + ModSecurity",
+  "summary": "Читает access.log и error.log Apache и журнал аудита ModSecurity, объединяет все три в одно событие на каждый запрос (UNIQUE_ID) и отличает то, что ModSecurity уже заблокировал, от того, что дошло до приложения.",
+  "settings": {
+    "manual_only": {
+      "label": "Только источники ниже",
+      "help": "Не обнаруживать журналы по конфигурации Apache: читать только источники, перечисленные ниже."
+    },
+    "sources": {
+      "label": "Источники, добавленные вручную",
+      "help": "Журналы, которые читаются помимо обнаруженных (или вместо них, если включён параметр выше). Абсолютные пути.",
+      "add": "Добавить источник",
+      "remove": "Убрать",
+      "empty": "Нет источников, добавленных вручную.",
+      "fields": {
+        "kind": "Тип",
+        "path": "Путь",
+        "vhost": "Vhost",
+        "format": "LogFormat",
+        "audit_type": "Тип журнала аудита",
+        "storage_dir": "Папка хранения аудита"
+      }
+    },
+    "config_file": {
+      "label": "Файл конфигурации Apache",
+      "help": "Пусто: определяется автоматически (/etc/apache2/apache2.conf в Debian, /etc/apache2/httpd.conf в Alpine)."
+    },
+    "discovery_interval_seconds": {
+      "label": "Интервал обнаружения (секунды)",
+      "help": "Как часто конфигурация Apache перечитывается, чтобы найти новые vhost и журналы."
+    },
+    "anomaly_threshold": {
+      "label": "Порог блокировки ModSecurity",
+      "help": "0: берётся из конфигурации CRS (tx.inbound_anomaly_score_threshold), а если его там нет — 5."
+    },
+    "learning_days": {
+      "label": "Дни обучения для новых PHP-файлов",
+      "help": "В первые дни ранее не встречавшийся PHP-файл не считается новым (правило apache-webshell)."
+    }
+  },
+  "choices": {
+    "access": "access.log",
+    "error": "error.log",
+    "audit": "Журнал аудита ModSecurity",
+    "serial": "Последовательный (один файл)",
+    "concurrent": "Параллельный (по файлу на каждый запрос)"
+  },
+  "install_requirements": {
+    "note": "Apache 2.4 с ModSecurity 2 (mod_security2) и OWASP Core Rule Set. С одним Apache модуль остаётся выключенным: ему нужен загруженный ModSecurity.",
+    "debian": "Команда cp создаёт /etc/modsecurity/modsecurity.conf из рекомендуемой конфигурации (DetectionOnly), только если этого файла нет: ваш файл она никогда не заменяет. a2enmod и перезапуск загружают в Apache ModSecurity и mod_unique_id.",
+    "alpine": "В Alpine нет пакета ModSecurity 2 для Apache: после этих команд соберите mod_security2 2.9 и OWASP CRS из исходного кода и загрузите их в /etc/apache2/httpd.conf (LoadModule security2_module и LoadModule unique_id_module). Пока ModSecurity не загружен, модуль остаётся выключенным."
+  }
+}

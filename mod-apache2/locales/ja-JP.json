@@ -1,0 +1,53 @@
+{
+  "name": "Apache + ModSecurity",
+  "summary": "Apache の access.log と error.log、および ModSecurity の監査ログを読み取り、これら3つをリクエストごとに1つのイベント（UNIQUE_ID）に結合して、ModSecurity がすでにブロックしたものとアプリケーションに到達したものを区別します。",
+  "settings": {
+    "manual_only": {
+      "label": "以下のソースのみ",
+      "help": "Apache の設定からログを検出せず、以下に記載したソースのみを読み取ります。"
+    },
+    "sources": {
+      "label": "手動で追加したソース",
+      "help": "検出されたログに加えて（上のオプションを使う場合はその代わりに）読み取るログ。絶対パスで指定します。",
+      "add": "ソースを追加",
+      "remove": "削除",
+      "empty": "手動で追加したソースはありません。",
+      "fields": {
+        "kind": "種類",
+        "path": "パス",
+        "vhost": "Vhost",
+        "format": "LogFormat",
+        "audit_type": "監査ログの種類",
+        "storage_dir": "監査ログの保存フォルダー"
+      }
+    },
+    "config_file": {
+      "label": "Apache の設定ファイル",
+      "help": "空の場合は自動で検出します（Debian では /etc/apache2/apache2.conf、Alpine では /etc/apache2/httpd.conf）。"
+    },
+    "discovery_interval_seconds": {
+      "label": "検出間隔（秒）",
+      "help": "新しい vhost やログを見つけるために、Apache の設定を読み直す間隔。"
+    },
+    "anomaly_threshold": {
+      "label": "ModSecurity のブロックしきい値",
+      "help": "0：CRS の設定（tx.inbound_anomaly_score_threshold）から読み取り、見つからない場合は 5。"
+    },
+    "learning_days": {
+      "label": "新しい PHP ファイルの学習日数",
+      "help": "最初の数日間は、初めて見る PHP ファイルを新規として報告しません（ルール apache-webshell）。"
+    }
+  },
+  "choices": {
+    "access": "access.log",
+    "error": "error.log",
+    "audit": "ModSecurity の監査ログ",
+    "serial": "シリアル（単一ファイル）",
+    "concurrent": "コンカレント（リクエストごとに1ファイル）"
+  },
+  "install_requirements": {
+    "note": "Apache 2.4 と ModSecurity 2（mod_security2）、および OWASP Core Rule Set。Apache だけではモジュールは無効のままです。ModSecurity が読み込まれている必要があります。",
+    "debian": "cp は、推奨設定（DetectionOnly）から /etc/modsecurity/modsecurity.conf を作成します。ただし、ファイルが存在しない場合のみで、既存の設定を置き換えることはありません。a2enmod と再起動により、Apache に ModSecurity と mod_unique_id が読み込まれます。",
+    "alpine": "Alpine には Apache 用の ModSecurity 2 パッケージがありません。これらのコマンドの後、mod_security2 2.9 と OWASP CRS をソースからビルドし、/etc/apache2/httpd.conf で読み込んでください（LoadModule security2_module と LoadModule unique_id_module）。ModSecurity が読み込まれるまで、モジュールは無効のままです。"
+  }
+}

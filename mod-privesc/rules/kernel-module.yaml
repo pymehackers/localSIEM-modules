@@ -1,0 +1,13 @@
+id: privesc-kernel-module
+name: "Privilege escalation: kernel module loaded from a session"
+category: rootkit
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  method: kmod
+  login_user: {exists: true}
+  action: none
+  ignored: {not: true}
+description: "A kernel module was loaded or removed from the session of {vhost} ({uri}), not by the kernel itself. Rootkits are kernel modules. If nobody installed a driver on purpose, check the module (lsmod, modinfo)."
+search: "uid:{uid:q}"

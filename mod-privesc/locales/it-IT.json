@@ -1,0 +1,68 @@
+{
+  "name": "Escalation dei privilegi",
+  "summary": "Sorveglia ciò che persone e servizi eseguono sul server (auditd con le regole che il server ha già, e sudo, su, pkexec, doas e snoopy tramite syslog) e segnala i passi di un'escalation dei privilegi: raffiche di ricognizione, la ricerca di programmi setuid, linpeas e altri strumenti, exploit noti, reverse shell, root ottenuto senza sudo né su, backdoor lasciate, e i programmi setuid e i file scrivibili che la rendono possibile.",
+  "settings": {
+    "audit_log": {
+      "label": "Log di audit",
+      "help": "Vuoto: log_file di /etc/audit/auditd.conf, oppure /var/log/audit/audit.log."
+    },
+    "syslog_mode": {
+      "label": "Leggi syslog",
+      "help": "Automatico: solo quando auditd non è in esecuzione (container), il suo log non può essere letto o snoopy è installato. syslog fornisce sudo, su, pkexec e doas, e i comandi di snoopy."
+    },
+    "syslog_file": {
+      "label": "File di syslog",
+      "help": "Vuoto: /var/log/auth.log, /var/log/secure o /var/log/messages, il primo che esiste."
+    },
+    "ignored_users": {
+      "label": "Utenti ignorati",
+      "help": "Separati da virgole. I loro comandi vengono conservati e sono ricercabili, ma non generano mai avvisi (account di automazione come ansible). L'utente localsiem viene sempre ignorato."
+    },
+    "admin_groups": {
+      "label": "Gruppi di amministratori",
+      "help": "Separati da virgole. I loro membri hanno la soglia di ricognizione più alta e possono elencare i propri permessi sudo."
+    },
+    "recon_window_seconds": {
+      "label": "Finestra di ricognizione (secondi)",
+      "help": "I comandi di ricognizione distinti di una sessione vengono contati all'interno di questa finestra."
+    },
+    "recon_threshold": {
+      "label": "Soglia di ricognizione",
+      "help": "Comandi di ricognizione distinti nella finestra che costituiscono una raffica (regola privesc-recon-burst) per utenti e account di servizio."
+    },
+    "recon_threshold_admins": {
+      "label": "Soglia di ricognizione per gli amministratori",
+      "help": "Lo stesso per root e per i membri dei gruppi di amministratori, che eseguono questi comandi come parte del loro lavoro."
+    },
+    "enumeration_threshold": {
+      "label": "Soglia di enumerazione automatica",
+      "help": "Comandi di ricognizione distinti nella finestra che solo uno script esegue (regola privesc-enumeration, tipo linpeas), per tutti."
+    },
+    "learning_days": {
+      "label": "Giorni di apprendimento degli account di servizio",
+      "help": "Durante i primi giorni i programmi eseguiti da ogni account di servizio vengono appresi senza avvisi (regola privesc-service-new-program)."
+    },
+    "surface_scan_hours": {
+      "label": "Ore tra le scansioni dei programmi setuid",
+      "help": "Ricerca di programmi setuid e setgid e di capability dei file; quelli nuovi vengono segnalati. 0: mai."
+    },
+    "scan_paths": {
+      "label": "Cartelle analizzate",
+      "help": "Separate da virgole; ognuna viene percorsa senza uscire dal suo file system."
+    },
+    "discovery_interval_seconds": {
+      "label": "Intervallo di rilevamento (secondi)",
+      "help": "Ogni quanto si cercano il log di audit, syslog e lo stato di auditd."
+    }
+  },
+  "choices": {
+    "auto": "Automatico",
+    "always": "Sempre",
+    "never": "Mai"
+  },
+  "install_requirements": {
+    "note": "Basta una qualsiasi sorgente leggibile: auditd è quella che vede di più, ma non può funzionare in un container (LXC, Docker); un demone syslog registra sudo, su, pkexec e doas. auditd registra solo le chiamate di sistema delle regole di audit che il server carica: il modulo non aggiunge mai regole.",
+    "debian": "rsyslog scrive /var/log/auth.log. Per vedere anche ogni programma eseguito, aggiungi snoopy (apt-get -y install snoopy). In un container, installa solo rsyslog: lì auditd non può funzionare.",
+    "alpine": "Alpine registra già sudo, su e doas in /var/log/messages con il suo syslog (BusyBox), quindi questi comandi aggiungono solo auditd (non in un container). Alpine non ha un pacchetto snoopy."
+  }
+}

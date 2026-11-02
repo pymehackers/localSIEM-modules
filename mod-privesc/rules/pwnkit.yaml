@@ -1,0 +1,12 @@
+id: privesc-pwnkit
+name: "Privilege escalation: PwnKit (pkexec run without arguments)"
+category: exploit
+type: privilege-escalation
+severity: critical
+kind: match
+when:
+  path: {suffix: /pkexec}
+  argc_zero: true
+  ignored: {not: true}
+description: "{vhost} ran pkexec with no arguments at all (argc 0), which is never done by hand: it is the PwnKit exploit (CVE-2021-4034), which gives root on systems with an unpatched polkit. Check whether a root shell followed and update polkit."
+search: "uid:{uid:q}"

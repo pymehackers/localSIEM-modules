@@ -1,0 +1,32 @@
+id: apache-login-after-bruteforce
+name: "Apache: successful login after a brute force"
+category: bruteforce
+type: authentication
+severity: high
+kind: sequence
+first:
+  method: POST
+  path: {in_list: login_paths}
+  status: {in_list: failure_status}
+first_threshold: 10
+then:
+  method: POST
+  path: {in_list: login_paths}
+  status: {in_list: success_status}
+by: [ip, vhost]
+window: 1800
+lists:
+  login_paths:
+    - /wp-login.php
+    - /administrator/index.php
+    - /user/login
+    - /login
+    - /admin/login
+    - /login.php
+    - /signin
+    - /auth/login
+  # WordPress answers 200 to a failed login and 302 to /wp-admin/ to a good one.
+  failure_status: [200, 401, 403]
+  success_status: [302, 303]
+description: "{ip} sent {count} failed logins to {path} of {vhost} and then one succeeded ({status}). The account may be compromised: check its sessions, change its password and review what was done after the login."
+search: "ip:{ip:q} path:{path:q}"

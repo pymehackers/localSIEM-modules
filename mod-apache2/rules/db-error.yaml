@@ -1,0 +1,14 @@
+id: apache-db-error-after-attack
+name: "Apache: database error after a suspicious request"
+category: db-error
+type: web-attack
+severity: critical
+kind: sequence
+first:
+  crs_matched: true
+then:
+  db_error: true
+by: [ip]
+window: 30
+description: "A database error (SQL or PDO) appeared in error.log for {ip} shortly after a request of the same IP that matched CRS rules. An injection may be working: check the queries of the application and what data the IP could read."
+search: "ip:{ip:q}"

@@ -1,0 +1,25 @@
+id: privesc-container-escape
+name: "Privilege escalation: container used to reach the host as root"
+category: container-escape
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  uri: {regex_list: escapes}
+  real_uid: {not: 0}
+  ignored: {not: true}
+lists:
+  escapes:
+    - '\b(docker|podman|nerdctl)\s+(run|create)\b.*\s(-v|--volume)[\s=]+/:'
+    - '\b(docker|podman|nerdctl)\s+(run|create)\b.*type=bind,\s*(source|src)=/(,|\s|$)'
+    - '\b(docker|podman|nerdctl)\s+(run|create|exec)\b.*--privileged'
+    - '\b(docker|podman|nerdctl)\s+(run|create)\b.*--(pid|net|ipc|userns)[\s=]+host'
+    - '\bnsenter\s+.*(-t|--target)[\s=]*1\b'
+    - '\blxc\s+config\s+set\s+\S+\s+security\.privileged\s+true'
+    - '\blxc\s+config\s+device\s+add\s+.*\bsource=/(\s|$)'
+    - '\b(incus)\s+config\s+set\s+\S+\s+security\.privileged\s+true'
+    - '\bdebugfs\s+(-\S+\s+)*/dev/'
+    - '\bctr\s+.*\brun\b.*--privileged'
+    - '\bkubectl\s+.*(--privileged|hostPID|hostPath)'
+description: "{vhost}, who is not root, ran {uri}: a container or a raw disk used to reach the files of the host as root. Being in the groups docker, lxd or disk is being root; check who added the account to the group."
+search: "uid:{uid:q}"

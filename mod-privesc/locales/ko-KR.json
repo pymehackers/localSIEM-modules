@@ -1,0 +1,68 @@
+{
+  "name": "권한 상승",
+  "summary": "사용자와 서비스가 서버에서 실행하는 것을 감시하고(서버에 이미 있는 규칙을 사용하는 auditd, 그리고 syslog를 통한 sudo, su, pkexec, doas 및 snoopy) 권한 상승의 단계를 보고합니다: 정찰 명령의 집중 실행, setuid 프로그램 탐색, linpeas 및 기타 도구, 알려진 익스플로잇, 리버스 셸, sudo나 su 없이 획득한 root, 남겨진 백도어, 그리고 이를 가능하게 하는 setuid 프로그램과 쓰기 가능한 파일.",
+  "settings": {
+    "audit_log": {
+      "label": "감사 로그",
+      "help": "비워 두면 /etc/audit/auditd.conf의 log_file 또는 /var/log/audit/audit.log를 사용합니다."
+    },
+    "syslog_mode": {
+      "label": "syslog 읽기",
+      "help": "자동: auditd가 실행되지 않거나(컨테이너), auditd 로그를 읽을 수 없거나, snoopy가 설치된 경우에만 읽습니다. syslog에서는 sudo, su, pkexec, doas와 snoopy의 명령을 얻을 수 있습니다."
+    },
+    "syslog_file": {
+      "label": "syslog 파일",
+      "help": "비워 두면 /var/log/auth.log, /var/log/secure, /var/log/messages 중 처음으로 존재하는 파일을 사용합니다."
+    },
+    "ignored_users": {
+      "label": "무시할 사용자",
+      "help": "쉼표로 구분합니다. 이 사용자의 명령은 보관되고 검색할 수 있지만 알림을 발생시키지 않습니다(ansible 같은 자동화 계정). localsiem 사용자는 항상 무시됩니다."
+    },
+    "admin_groups": {
+      "label": "관리자 그룹",
+      "help": "쉼표로 구분합니다. 이 그룹의 구성원에게는 더 높은 정찰 임계값이 적용되며, 구성원은 자신의 sudo 권한을 조회할 수 있습니다."
+    },
+    "recon_window_seconds": {
+      "label": "정찰 기간(초)",
+      "help": "한 세션에서 실행된 서로 다른 정찰 명령을 이 기간 안에서 셉니다."
+    },
+    "recon_threshold": {
+      "label": "정찰 임계값",
+      "help": "사용자와 서비스 계정에 대해 집중 실행(privesc-recon-burst 규칙)으로 판단하는, 기간 내 서로 다른 정찰 명령의 수입니다."
+    },
+    "recon_threshold_admins": {
+      "label": "관리자용 정찰 임계값",
+      "help": "root와 관리자 그룹 구성원에게 적용되는 같은 값입니다. 이들은 업무상 이러한 명령을 실행합니다."
+    },
+    "enumeration_threshold": {
+      "label": "자동 열거 임계값",
+      "help": "스크립트만이 실행할 만한, 기간 내 서로 다른 정찰 명령의 수입니다(privesc-enumeration 규칙, linpeas 유형). 모든 사용자에게 적용됩니다."
+    },
+    "learning_days": {
+      "label": "서비스 계정 학습 기간(일)",
+      "help": "처음 며칠 동안은 각 서비스 계정이 실행하는 프로그램을 알림 없이 학습합니다(privesc-service-new-program 규칙)."
+    },
+    "surface_scan_hours": {
+      "label": "setuid 프로그램 검사 간격(시간)",
+      "help": "setuid 및 setgid 프로그램과 파일 capability를 검색하며, 새로 발견되면 보고합니다. 0: 검사 안 함."
+    },
+    "scan_paths": {
+      "label": "검사할 폴더",
+      "help": "쉼표로 구분합니다. 각 폴더는 해당 파일 시스템을 벗어나지 않고 탐색합니다."
+    },
+    "discovery_interval_seconds": {
+      "label": "탐색 간격(초)",
+      "help": "감사 로그, syslog, auditd 상태를 찾는 주기입니다."
+    }
+  },
+  "choices": {
+    "auto": "자동",
+    "always": "항상",
+    "never": "안 함"
+  },
+  "install_requirements": {
+    "note": "읽을 수 있는 소스가 하나만 있으면 됩니다. auditd가 가장 많은 것을 보지만 컨테이너(LXC, Docker)에서는 실행할 수 없습니다. syslog 데몬은 sudo, su, pkexec, doas를 기록합니다. auditd는 서버가 로드한 감사 규칙의 시스템 호출만 기록하며, 이 모듈은 규칙을 추가하지 않습니다.",
+    "debian": "rsyslog가 /var/log/auth.log를 기록합니다. 실행되는 모든 프로그램도 보려면 snoopy를 추가하십시오(apt-get -y install snoopy). 컨테이너에서는 rsyslog만 설치하십시오. auditd는 컨테이너에서 실행할 수 없습니다.",
+    "alpine": "Alpine은 이미 syslog(BusyBox)로 sudo, su, doas를 /var/log/messages에 기록하므로, 이 명령은 auditd만 추가합니다(컨테이너에서는 제외). Alpine에는 snoopy 패키지가 없습니다."
+  }
+}

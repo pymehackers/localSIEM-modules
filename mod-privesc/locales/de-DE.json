@@ -1,0 +1,68 @@
+{
+  "name": "Rechteausweitung",
+  "summary": "Überwacht, was Personen und Dienste auf dem Server ausführen (auditd mit den Regeln, die der Server bereits hat, sowie sudo, su, pkexec, doas und snoopy über syslog), und meldet die Schritte einer Rechteausweitung: Häufungen von Aufklärungsbefehlen, die Suche nach setuid-Programmen, linpeas und andere Werkzeuge, bekannte Exploits, Reverse Shells, ohne sudo oder su erlangte root-Rechte, zurückgelassene Hintertüren sowie die setuid-Programme und beschreibbaren Dateien, die sie ermöglichen.",
+  "settings": {
+    "audit_log": {
+      "label": "Audit-Log",
+      "help": "Leer: log_file aus /etc/audit/auditd.conf oder /var/log/audit/audit.log."
+    },
+    "syslog_mode": {
+      "label": "syslog lesen",
+      "help": "Automatisch: nur wenn auditd nicht läuft (Container), sein Log nicht gelesen werden kann oder snoopy installiert ist. syslog liefert sudo, su, pkexec und doas sowie die Befehle von snoopy."
+    },
+    "syslog_file": {
+      "label": "syslog-Datei",
+      "help": "Leer: /var/log/auth.log, /var/log/secure oder /var/log/messages, die erste, die existiert."
+    },
+    "ignored_users": {
+      "label": "Ignorierte Benutzer",
+      "help": "Durch Kommas getrennt. Ihre Befehle werden gespeichert und sind durchsuchbar, lösen aber nie einen Alarm aus (Automatisierungskonten wie ansible). Der Benutzer localsiem wird immer ignoriert."
+    },
+    "admin_groups": {
+      "label": "Administratorgruppen",
+      "help": "Durch Kommas getrennt. Ihre Mitglieder erhalten den höheren Aufklärungsschwellenwert und dürfen ihre sudo-Rechte auflisten."
+    },
+    "recon_window_seconds": {
+      "label": "Aufklärungsfenster (Sekunden)",
+      "help": "Unterschiedliche Aufklärungsbefehle einer Sitzung werden innerhalb dieses Zeitfensters gezählt."
+    },
+    "recon_threshold": {
+      "label": "Aufklärungsschwellenwert",
+      "help": "Anzahl unterschiedlicher Aufklärungsbefehle im Zeitfenster, die eine Häufung bilden (Regel privesc-recon-burst), für Benutzer und Dienstkonten."
+    },
+    "recon_threshold_admins": {
+      "label": "Aufklärungsschwellenwert für Administratoren",
+      "help": "Dasselbe für root und die Mitglieder der Administratorgruppen, die diese Befehle im Rahmen ihrer Arbeit ausführen."
+    },
+    "enumeration_threshold": {
+      "label": "Schwellenwert für automatisierte Enumeration",
+      "help": "Anzahl unterschiedlicher Aufklärungsbefehle im Zeitfenster, die nur ein Skript ausführt (Regel privesc-enumeration, ähnlich wie linpeas), für alle."
+    },
+    "learning_days": {
+      "label": "Lerntage der Dienstkonten",
+      "help": "In den ersten Tagen werden die Programme, die jedes Dienstkonto ausführt, ohne Alarme gelernt (Regel privesc-service-new-program)."
+    },
+    "surface_scan_hours": {
+      "label": "Stunden zwischen Scans nach setuid-Programmen",
+      "help": "Suche nach setuid- und setgid-Programmen sowie Datei-Capabilities; jedes neue wird gemeldet. 0: nie."
+    },
+    "scan_paths": {
+      "label": "Gescannte Ordner",
+      "help": "Durch Kommas getrennt; jeder Ordner wird durchlaufen, ohne sein Dateisystem zu verlassen."
+    },
+    "discovery_interval_seconds": {
+      "label": "Erkennungsintervall (Sekunden)",
+      "help": "Wie oft nach dem Audit-Log, syslog und dem Zustand von auditd gesucht wird."
+    }
+  },
+  "choices": {
+    "auto": "Automatisch",
+    "always": "Immer",
+    "never": "Nie"
+  },
+  "install_requirements": {
+    "note": "Eine einzige lesbare Quelle genügt: auditd sieht am meisten, kann aber nicht in einem Container laufen (LXC, Docker); ein syslog-Daemon protokolliert sudo, su, pkexec und doas. auditd protokolliert nur die Systemaufrufe der Audit-Regeln, die der Server lädt: Das Modul fügt nie Regeln hinzu.",
+    "debian": "rsyslog schreibt /var/log/auth.log. Um auch jedes ausgeführte Programm zu sehen, fügen Sie snoopy hinzu (apt-get -y install snoopy). Installieren Sie in einem Container nur rsyslog: auditd kann dort nicht laufen.",
+    "alpine": "Alpine protokolliert sudo, su und doas bereits mit seinem syslog (BusyBox) in /var/log/messages, daher fügen diese Befehle nur auditd hinzu (nicht in einem Container). Alpine hat kein snoopy-Paket."
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Privilege escalation",
+  "summary": "Watches what people and services run on the server (auditd with the rules the server already has, and sudo, su, pkexec, doas and snoopy through syslog) and reports the steps of a privilege escalation: reconnaissance bursts, the search for setuid programs, linpeas and other tools, known exploits, reverse shells, root gained without sudo or su, back doors left behind, and the setuid programs and writable files that make it possible.",
+  "settings": {
+    "audit_log": {
+      "label": "Audit log",
+      "help": "Empty: log_file of /etc/audit/auditd.conf, or /var/log/audit/audit.log."
+    },
+    "syslog_mode": {
+      "label": "Read syslog",
+      "help": "Automatic: only when auditd is not running (containers), its log cannot be read, or snoopy is installed. syslog gives sudo, su, pkexec and doas, and the commands of snoopy."
+    },
+    "syslog_file": {
+      "label": "Syslog file",
+      "help": "Empty: /var/log/auth.log, /var/log/secure or /var/log/messages, the first one that exists."
+    },
+    "ignored_users": {
+      "label": "Ignored users",
+      "help": "Comma separated. Their commands are kept and searchable but never raise an alert (automation accounts such as ansible). The user localsiem is always ignored."
+    },
+    "admin_groups": {
+      "label": "Administrator groups",
+      "help": "Comma separated. Their members get the higher reconnaissance threshold and may list their sudo rights."
+    },
+    "recon_window_seconds": {
+      "label": "Reconnaissance window (seconds)",
+      "help": "Distinct reconnaissance commands of one session are counted inside this window."
+    },
+    "recon_threshold": {
+      "label": "Reconnaissance threshold",
+      "help": "Distinct reconnaissance commands in the window that make a burst (rule privesc-recon-burst) for users and service accounts."
+    },
+    "recon_threshold_admins": {
+      "label": "Reconnaissance threshold for administrators",
+      "help": "The same for root and the members of the administrator groups, who run these commands as part of their job."
+    },
+    "enumeration_threshold": {
+      "label": "Automated enumeration threshold",
+      "help": "Distinct reconnaissance commands in the window that only a script runs (rule privesc-enumeration, linpeas-like), for everybody."
+    },
+    "learning_days": {
+      "label": "Learning days of the service accounts",
+      "help": "During the first days the programs each service account runs are learned without alerts (rule privesc-service-new-program)."
+    },
+    "surface_scan_hours": {
+      "label": "Hours between scans of setuid programs",
+      "help": "Search of setuid and setgid programs and file capabilities; a new one is reported. 0: never."
+    },
+    "scan_paths": {
+      "label": "Folders scanned",
+      "help": "Comma separated; each one is walked without leaving its file system."
+    },
+    "discovery_interval_seconds": {
+      "label": "Discovery interval (seconds)",
+      "help": "How often the audit log, syslog and the state of auditd are looked for."
+    }
+  },
+  "choices": {
+    "auto": "Automatic",
+    "always": "Always",
+    "never": "Never"
+  },
+  "install_requirements": {
+    "note": "Any one readable source is enough: auditd sees the most, but it cannot run in a container (LXC, Docker); a syslog daemon logs sudo, su, pkexec and doas. auditd only logs the system calls of the audit rules the server loads: the module never adds rules.",
+    "debian": "rsyslog writes /var/log/auth.log. To also see every program run, add snoopy (apt-get -y install snoopy). In a container, install rsyslog only: auditd cannot run there.",
+    "alpine": "Alpine already logs sudo, su and doas in /var/log/messages with its syslog (BusyBox), so these commands add auditd only (not in a container). Alpine has no snoopy package."
+  }
+}

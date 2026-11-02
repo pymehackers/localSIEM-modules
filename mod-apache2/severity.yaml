@@ -1,0 +1,14 @@
+# Severity of what the Apache module sends to the SOC.
+# Values: low, medium, high, critical.
+
+# CRS matches that were not blocked, with a 2xx answer.
+crs_not_blocked_2xx: high
+# CRS matches that were not blocked, with a 3xx, 4xx or 5xx answer.
+crs_not_blocked_other: medium
+# Blocked in phases 3-4: the application had already run the request.
+blocked_late: high
+# Signs of success: outbound rule (950-955) not blocked, SQL error right after.
+success_indicator: critical
+# Matches below the anomaly threshold (usually false positives). The setting
+# below_threshold_severity overrides it.
+below_threshold: low

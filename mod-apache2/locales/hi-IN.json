@@ -1,0 +1,53 @@
+{
+  "name": "Apache + ModSecurity",
+  "summary": "Apache का access.log और error.log तथा ModSecurity का ऑडिट लॉग पढ़ता है, तीनों को हर अनुरोध के लिए एक इवेंट (UNIQUE_ID) में जोड़ता है और बताता है कि ModSecurity ने क्या पहले ही ब्लॉक कर दिया और क्या एप्लिकेशन तक पहुँचा।",
+  "settings": {
+    "manual_only": {
+      "label": "केवल नीचे दिए गए स्रोत",
+      "help": "Apache कॉन्फ़िगरेशन से लॉग डिस्कवर न करें: केवल नीचे सूचीबद्ध स्रोत पढ़ें।"
+    },
+    "sources": {
+      "label": "मैन्युअल रूप से जोड़े गए स्रोत",
+      "help": "डिस्कवर किए गए लॉग के अलावा पढ़े जाने वाले लॉग (या ऊपर वाले विकल्प के साथ, उनकी जगह)। पूर्ण पाथ।",
+      "add": "स्रोत जोड़ें",
+      "remove": "हटाएँ",
+      "empty": "मैन्युअल रूप से कोई स्रोत नहीं जोड़ा गया।",
+      "fields": {
+        "kind": "प्रकार",
+        "path": "पाथ",
+        "vhost": "Vhost",
+        "format": "LogFormat",
+        "audit_type": "ऑडिट लॉग का प्रकार",
+        "storage_dir": "ऑडिट स्टोरेज फ़ोल्डर"
+      }
+    },
+    "config_file": {
+      "label": "Apache कॉन्फ़िगरेशन फ़ाइल",
+      "help": "खाली: अपने आप ढूँढी जाती है (Debian पर /etc/apache2/apache2.conf, Alpine पर /etc/apache2/httpd.conf)।"
+    },
+    "discovery_interval_seconds": {
+      "label": "डिस्कवरी अंतराल (सेकंड)",
+      "help": "नए vhost और लॉग ढूँढने के लिए Apache कॉन्फ़िगरेशन कितनी बार फिर से पढ़ा जाता है।"
+    },
+    "anomaly_threshold": {
+      "label": "ModSecurity का ब्लॉकिंग थ्रेशोल्ड",
+      "help": "0: CRS कॉन्फ़िगरेशन (tx.inbound_anomaly_score_threshold) से पढ़ा जाता है, वहाँ न हो तो 5।"
+    },
+    "learning_days": {
+      "label": "नई PHP फ़ाइलों के लिए लर्निंग दिन",
+      "help": "शुरुआती दिनों में, पहले कभी न देखी गई PHP फ़ाइल को नई फ़ाइल के रूप में रिपोर्ट नहीं किया जाता (नियम apache-webshell)।"
+    }
+  },
+  "choices": {
+    "access": "access.log",
+    "error": "error.log",
+    "audit": "ModSecurity ऑडिट लॉग",
+    "serial": "सीरियल (एक फ़ाइल)",
+    "concurrent": "कॉन्करेंट (प्रति अनुरोध एक फ़ाइल)"
+  },
+  "install_requirements": {
+    "note": "ModSecurity 2 (mod_security2) और OWASP Core Rule Set के साथ Apache 2.4। केवल Apache होने पर मॉड्यूल बंद रहता है: इसके लिए ModSecurity का लोड होना ज़रूरी है।",
+    "debian": "cp कमांड /etc/modsecurity/modsecurity.conf को अनुशंसित कॉन्फ़िगरेशन (DetectionOnly) से केवल तभी बनाता है जब वह मौजूद न हो: यह आपकी फ़ाइल को कभी नहीं बदलता। a2enmod और रीस्टार्ट Apache में ModSecurity और mod_unique_id को लोड करते हैं।",
+    "alpine": "Alpine में Apache के लिए ModSecurity 2 का पैकेज नहीं है: इन कमांड के बाद, mod_security2 2.9 और OWASP CRS को सोर्स से बिल्ड करें और उन्हें /etc/apache2/httpd.conf में लोड करें (LoadModule security2_module और LoadModule unique_id_module)। जब तक ModSecurity लोड नहीं होता, मॉड्यूल बंद रहता है।"
+  }
+}

@@ -1,0 +1,13 @@
+id: privesc-service-recon
+name: "Privilege escalation: service account ran reconnaissance commands"
+category: webshell-command
+type: privilege-escalation
+severity: high
+kind: match
+when:
+  service_account: true
+  recon: {exists: true}
+  action: none
+  ignored: {not: true}
+description: "The service account {vhost} ran {uri}. Services (web server, database, mail) do not ask who they are or what the system is: this is almost always a web shell or an exploited service in the hands of an attacker. Check the logs of the service (Apache module) at the same time."
+search: "module:privesc vhost:{vhost:q}"

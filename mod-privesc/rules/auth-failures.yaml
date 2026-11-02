@@ -1,0 +1,15 @@
+id: privesc-auth-failures
+name: "Privilege escalation: repeated sudo or su failures"
+category: authentication
+type: privilege-escalation
+severity: medium
+kind: threshold
+when:
+  method: {in: [sudo, su, pkexec, doas]}
+  result: failed
+  ignored: {not: true}
+by: [vhost]
+window: 600
+threshold: 3
+description: "{count} failed attempts of {vhost} to become another user with sudo, su, pkexec or doas in {window} seconds (wrong password, or not allowed). Someone is guessing the password of root or of an administrator, or testing what the account may do."
+search: "module:privesc vhost:{vhost:q} action:blocked"

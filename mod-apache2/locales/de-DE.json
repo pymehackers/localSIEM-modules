@@ -1,0 +1,53 @@
+{
+  "name": "Apache + ModSecurity",
+  "summary": "Liest das access.log und das error.log von Apache sowie das Audit-Log von ModSecurity, führt die drei zu einem einzigen Ereignis pro Anfrage zusammen (UNIQUE_ID) und unterscheidet, was ModSecurity bereits blockiert hat, von dem, was die Anwendung erreicht hat.",
+  "settings": {
+    "manual_only": {
+      "label": "Nur die Quellen unten",
+      "help": "Die Logs nicht aus der Apache-Konfiguration erkennen: nur die unten aufgeführten Quellen lesen."
+    },
+    "sources": {
+      "label": "Manuell hinzugefügte Quellen",
+      "help": "Logs, die zusätzlich zu den erkannten gelesen werden (oder stattdessen, mit der Option oben). Absolute Pfade.",
+      "add": "Quelle hinzufügen",
+      "remove": "Entfernen",
+      "empty": "Keine manuell hinzugefügten Quellen.",
+      "fields": {
+        "kind": "Art",
+        "path": "Pfad",
+        "vhost": "Vhost",
+        "format": "LogFormat",
+        "audit_type": "Typ des Audit-Logs",
+        "storage_dir": "Audit-Speicherordner"
+      }
+    },
+    "config_file": {
+      "label": "Apache-Konfigurationsdatei",
+      "help": "Leer: wird automatisch gefunden (/etc/apache2/apache2.conf unter Debian, /etc/apache2/httpd.conf unter Alpine)."
+    },
+    "discovery_interval_seconds": {
+      "label": "Erkennungsintervall (Sekunden)",
+      "help": "Wie oft die Apache-Konfiguration erneut gelesen wird, um neue vhosts und Logs zu finden."
+    },
+    "anomaly_threshold": {
+      "label": "Blockierungsschwellenwert von ModSecurity",
+      "help": "0: wird aus der CRS-Konfiguration gelesen (tx.inbound_anomaly_score_threshold), 5, falls er dort nicht vorhanden ist."
+    },
+    "learning_days": {
+      "label": "Lerntage für neue PHP-Dateien",
+      "help": "In den ersten Tagen wird eine nie zuvor gesehene PHP-Datei nicht als neu gemeldet (Regel apache-webshell)."
+    }
+  },
+  "choices": {
+    "access": "access.log",
+    "error": "error.log",
+    "audit": "Audit-Log von ModSecurity",
+    "serial": "Seriell (eine Datei)",
+    "concurrent": "Parallel (eine Datei pro Anfrage)"
+  },
+  "install_requirements": {
+    "note": "Apache 2.4 mit ModSecurity 2 (mod_security2) und dem OWASP Core Rule Set. Mit Apache allein bleibt das Modul deaktiviert: Es benötigt ein geladenes ModSecurity.",
+    "debian": "Der cp-Befehl erstellt /etc/modsecurity/modsecurity.conf aus der empfohlenen Konfiguration (DetectionOnly) nur, wenn die Datei nicht existiert: Ihre eigene wird nie ersetzt. a2enmod und der Neustart laden ModSecurity und mod_unique_id in Apache.",
+    "alpine": "Alpine hat kein ModSecurity-2-Paket für Apache: Kompilieren Sie nach diesen Befehlen mod_security2 2.9 und das OWASP CRS aus dem Quellcode und laden Sie beide in /etc/apache2/httpd.conf (LoadModule security2_module und LoadModule unique_id_module). Solange ModSecurity nicht geladen ist, bleibt das Modul deaktiviert."
+  }
+}
